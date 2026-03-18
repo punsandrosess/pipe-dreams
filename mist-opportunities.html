@@ -1,1 +1,674 @@
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,900;1,400;1,700&family=Space+Mono:wght@400;700&family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,600;1,8..60,400;1,8..60,600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --void:#141410;--card:#1E1E18;--gold:#C9A84C;--gold-dim:rgba(201,168,76,0.3);
+  --gold-sub:rgba(201,168,76,0.08);--warm:#F5F0E8;--fog:#6B6B5E;--border:rgba(245,240,232,0.07);
+  --green:#1D9E75;--green-bg:rgba(29,158,117,0.12);
+  --amber:#C9893A;--amber-bg:rgba(201,137,58,0.12);
+  --red:#C0392B;--red-bg:rgba(192,57,43,0.12);
+  --gold-accent-bg:rgba(201,168,76,0.1);--gold-accent-border:rgba(201,168,76,0.25);
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+html{scroll-behavior:smooth;}
+body{
+  background:var(--void);color:var(--warm);font-family:'Space Mono',monospace;
+  font-size:13px;line-height:1.7;padding:20px;
+  background-image:linear-gradient(var(--gold-sub) 1px,transparent 1px),linear-gradient(90deg,var(--gold-sub) 1px,transparent 1px);
+  background-size:40px 40px;
+}
 
+input[type=text]{
+  outline:none;background:var(--card);border:1px solid var(--border);
+  border-radius:0;padding:5px 10px;color:var(--warm);
+  font-family:'Space Mono',monospace;font-weight:700;font-size:12px;
+}
+input[type=text]:focus{border-color:var(--gold-dim);}
+input[type=text].locked-ref{background:var(--void);border-color:var(--border);color:var(--fog);cursor:not-allowed;}
+button{cursor:pointer;border:none;font-family:'Space Mono',monospace;font-weight:700;font-size:11px;letter-spacing:.06em;}
+
+table{width:100%;border-collapse:collapse;font-size:12px;border:1px solid var(--border);}
+th{
+  padding:8px 10px;text-align:center;background:var(--card);color:var(--fog);
+  font-size:9px;font-family:'Space Mono',monospace;font-weight:700;
+  letter-spacing:.14em;text-transform:uppercase;border-bottom:1px solid var(--border);white-space:nowrap;
+}
+td{padding:6px 8px;text-align:center;border-bottom:1px solid var(--border);}
+
+.card{
+  background:var(--card);border:1px solid var(--border);border-left:3px solid var(--gold);
+  padding:18px 20px;margin-bottom:20px;position:relative;
+}
+.card::before{content:'';position:absolute;top:6px;right:6px;width:10px;height:10px;border-top:1px solid var(--gold-dim);border-right:1px solid var(--gold-dim);}
+.card::after{content:'';position:absolute;bottom:6px;left:6px;width:10px;height:10px;border-bottom:1px solid var(--gold-dim);border-left:1px solid var(--gold-dim);}
+
+.sec-label{font-family:'Space Mono',monospace;font-weight:700;font-size:9px;color:var(--gold);letter-spacing:.22em;text-transform:uppercase;margin-bottom:8px;display:block;}
+
+.overlay{position:fixed;inset:0;background:rgba(0,0,0,0.7);display:flex;align-items:center;justify-content:center;z-index:100;backdrop-filter:blur(4px);}
+.modal{
+  background:var(--card);border:1px solid var(--gold-dim);padding:28px;
+  width:440px;max-width:92vw;position:relative;
+}
+.modal::before{content:'';position:absolute;top:8px;left:8px;width:14px;height:14px;border-top:1px solid var(--gold);border-left:1px solid var(--gold);}
+.modal::after{content:'';position:absolute;bottom:8px;right:8px;width:14px;height:14px;border-bottom:1px solid var(--gold);border-right:1px solid var(--gold);}
+
+.flash{font-family:'Space Mono',monospace;font-size:9px;color:var(--green);letter-spacing:.12em;opacity:0;transition:opacity .3s;display:inline-block;}
+.flash.show{opacity:1;}
+
+textarea{
+  outline:none;border:1px solid var(--border);padding:8px 12px;
+  font-family:'Source Serif 4',serif;font-style:italic;font-size:13px;
+  color:var(--warm);resize:vertical;min-height:72px;width:100%;
+  background:var(--void);
+}
+textarea:focus{border-color:var(--gold-dim);}
+textarea::placeholder{color:var(--fog);}
+
+/* ── MOBILE ── */
+@media(max-width:600px){
+  body{padding:12px;}
+  .card{padding:14px 12px;}
+  .modal{width:calc(100vw - 24px);max-width:calc(100vw - 24px);padding:20px 16px 18px;}
+  .mob-tab-bar{width:100%!important;}
+  .mob-tab-bar button{flex:1;padding:8px 6px!important;font-size:10px!important;}
+  .mob-header{flex-direction:column!important;align-items:flex-start!important;}
+  .mob-header-right{width:100%!important;flex-direction:column!important;align-items:flex-start!important;gap:8px!important;}
+  .mob-lock-pill{width:100%!important;justify-content:space-between!important;}
+  .mob-legend{flex-wrap:wrap!important;gap:6px!important;}
+  .mob-hero{flex-direction:column!important;align-items:flex-start!important;gap:12px!important;}
+  .mob-hero-stats{gap:16px!important;}
+  .mob-refs{flex-direction:column!important;align-items:flex-start!important;gap:12px!important;}
+  .mob-qgoals{display:grid!important;grid-template-columns:1fr 1fr!important;gap:8px!important;}
+  .mob-kpi-grid{grid-template-columns:repeat(2,1fr)!important;gap:8px!important;}
+  .mob-kpi-grid > div{padding:12px 14px!important;}
+  .mob-summary td,.mob-summary th{padding:7px 6px!important;font-size:11px!important;}
+  .mob-log-entry{padding:10px 12px!important;}
+  .mob-log-header{flex-direction:column!important;align-items:flex-start!important;gap:4px!important;}
+}
+@media(max-width:400px){
+  .mob-kpi-grid{grid-template-columns:1fr 1fr!important;}
+  .mob-hero-stats{flex-direction:column!important;gap:8px!important;}
+}
+</style>
+
+<div id="app">
+  <div style="padding:60px;text-align:center;font-family:'Space Mono',monospace;font-size:11px;color:var(--fog);letter-spacing:.14em;text-transform:uppercase;">
+    Loading shared data…
+  </div>
+</div>
+<div id="modal-root"></div>
+
+<script>
+const B={
+  ink:"#F5F0E8",cream:"#1E1E18",fog:"#141410",mist:"rgba(245,240,232,0.07)",stone:"#6B6B5E",
+  mid:"#6B6B5E",orange:"#C9A84C",teal:"#1D9E75",tealBg:"rgba(29,158,117,0.12)",
+  amber:"#C9893A",amberBg:"rgba(201,137,58,0.12)",red:"#C0392B",redBg:"rgba(192,57,43,0.12)",
+  navy:"#C9A84C",white:"#1E1E18",
+  // New semantic refs
+  gold:"#C9A84C",goldDim:"rgba(201,168,76,0.3)",goldSub:"rgba(201,168,76,0.08)",
+  warm:"#F5F0E8",void:"#141410",card:"#1E1E18",border:"rgba(245,240,232,0.07)",
+  green:"#1D9E75",greenBg:"rgba(29,158,117,0.12)",
+  realAmber:"#C9893A",realAmberBg:"rgba(201,137,58,0.12)",
+  realRed:"#C0392B",realRedBg:"rgba(192,57,43,0.12)",
+};
+
+// For pct coloring use real colors
+const pctColorReal=(a,g)=>{if(!g)return B.stone;const r=a/g;return r>=1?B.green:r>=.75?B.realAmber:B.realRed};
+const pctBgReal=(a,g)=>{if(!g)return B.border;const r=a/g;return r>=1?B.greenBg:r>=.75?B.realAmberBg:B.realRedBg};
+
+const QUARTERS=["Q1FY26","Q2FY26","Q3FY26","Q4FY26"];
+const CHANNELS=["Website/Inbound","Paid Ads","Events","SDR Outbound","Webinars"];
+const WEIGHTS={"Website/Inbound":.45,"Paid Ads":.10,"Events":.20,"SDR Outbound":.15,"Webinars":.10};
+const SEASONALITY=[.2889,.2889,.2222,.20];
+const WEEKS=13;
+const INIT_ACTUALS={"Website/Inbound":[48,50,63,32],"Paid Ads":[2,1,4,0],"Events":[7,30,9,0],"SDR Outbound":[0,0,0,0],"Webinars":[1,3,2,1]};
+const ASP0=30000;
+const SK={actuals:"cantina_v5_actuals",dollar:"cantina_v5_dollar",refs:"cantina_v5_refs",lock:"cantina_v5_lock",goals:"cantina_v5_goals",log:"cantina_v5_log"};
+
+const fmtN=v=>Math.round(v).toLocaleString("en-US");
+const fmt$=v=>"$"+fmtN(v);
+const fmtM=v=>"$"+(v/1e6).toLocaleString("en-US",{minimumFractionDigits:2,maximumFractionDigits:2})+"M";
+const fmtPct=(a,g)=>!g?"—":Math.round((a/g)*100)+"%";
+const parseRaw=s=>Number(String(s).replace(/[^0-9.-]/g,""))||0;
+const pctColor=(a,g)=>{if(!g)return B.stone;const r=a/g;return r>=1?B.green:r>=.75?B.realAmber:B.realRed};
+const pctBg=(a,g)=>{if(!g)return B.border;const r=a/g;return r>=1?B.greenBg:r>=.75?B.realAmberBg:B.realRedBg};
+const sumRow=(o,ch)=>o[ch].reduce((a,b)=>a+b,0);
+const sumCol=(o,qi)=>CHANNELS.reduce((s,ch)=>s+o[ch][qi],0);
+const sumAll=o=>CHANNELS.reduce((s,ch)=>s+sumRow(o,ch),0);
+const clone=o=>JSON.parse(JSON.stringify(o));
+const tsNow=()=>new Date().toLocaleString("en-US",{month:"short",day:"numeric",year:"numeric",hour:"numeric",minute:"2-digit"});
+const dirWord=(a,b)=>a>b?"increased":a<b?"decreased":"updated";
+const initDollar=()=>{const r={};CHANNELS.forEach(ch=>{r[ch]=INIT_ACTUALS[ch].map(v=>v*ASP0)});return r};
+
+function buildManualGoals(asp,revGoal,convRate,mktgPct){
+  const totalPipe=convRate>0?revGoal/(convRate/100):0;
+  const mktgGoal=totalPipe*(mktgPct/100);
+  const qGoals=SEASONALITY.map(x=>mktgGoal*x);
+  const goals={};CHANNELS.forEach(ch=>{goals[ch]=qGoals.map(qd=>Math.round((qd*WEIGHTS[ch])/asp))});
+  const goalsDollar={};CHANNELS.forEach(ch=>{goalsDollar[ch]=goals[ch].map(v=>v*asp)});
+  return{goals,goalsDollar};
+}
+
+let state={
+  asp:30000,convRate:20,revGoal:10000000,revActual:0,mktgPct:45,
+  actuals:clone(INIT_ACTUALS),actDollar:initDollar(),
+  manualGoals:null,goalsLocked:false,lockedAt:null,
+  changeLog:[],tab:"opps",editCell:null,modal:null,loaded:false
+};
+let flashTimer=null;
+
+async function loadFromStorage(){
+  try{
+    const results=await Promise.all(Object.values(SK).map(k=>window.storage.get(k,true).catch(()=>null)));
+    const [ra,rd,rr,rl,rg,rlog]=results;
+    if(ra)state.actuals=JSON.parse(ra.value);
+    if(rd)state.actDollar=JSON.parse(rd.value);
+    if(rr){const r=JSON.parse(rr.value);Object.assign(state,{asp:r.asp||state.asp,convRate:r.convRate||state.convRate,revGoal:r.revGoal||state.revGoal,revActual:r.revActual??state.revActual,mktgPct:r.mktgPct||state.mktgPct});}
+    if(rl){const l=JSON.parse(rl.value);state.goalsLocked=l.locked;state.lockedAt=l.lockedAt||null;}
+    if(rg)state.manualGoals=JSON.parse(rg.value);
+    else state.manualGoals=buildManualGoals(state.asp,state.revGoal,state.convRate,state.mktgPct);
+    if(rlog)state.changeLog=JSON.parse(rlog.value);
+  }catch(e){
+    if(!state.manualGoals)state.manualGoals=buildManualGoals(state.asp,state.revGoal,state.convRate,state.mktgPct);
+  }
+  state.loaded=true;render();
+}
+
+async function saveActuals(){try{await window.storage.set(SK.actuals,JSON.stringify(state.actuals),true);await window.storage.set(SK.dollar,JSON.stringify(state.actDollar),true);}catch(e){}showFlash();}
+async function saveRefs(){try{await window.storage.set(SK.refs,JSON.stringify({asp:state.asp,convRate:state.convRate,revGoal:state.revGoal,revActual:state.revActual,mktgPct:state.mktgPct}),true);}catch(e){}}
+async function saveGoals(){try{await window.storage.set(SK.goals,JSON.stringify(state.manualGoals),true);}catch(e){}showFlash();}
+async function saveLock(){try{await window.storage.set(SK.lock,JSON.stringify({locked:state.goalsLocked,lockedAt:state.lockedAt}),true);}catch(e){}}
+async function saveLog(){try{await window.storage.set(SK.log,JSON.stringify(state.changeLog),true);}catch(e){}}
+
+function showFlash(){
+  const el=document.getElementById("save-flash");
+  if(el){el.classList.add("show");clearTimeout(flashTimer);flashTimer=setTimeout(()=>el.classList.remove("show"),1800);}
+}
+
+function getGoals(){return state.manualGoals;}
+function deriveTotals(){
+  const totalPipe=state.convRate>0?state.revGoal/(state.convRate/100):0;
+  const mktgGoal=totalPipe*(state.mktgPct/100);
+  const g=getGoals();
+  const totalActOpps=sumAll(state.actuals);
+  const totalGoalOpps=sumAll(g.goals);
+  const totalGoalPipe=CHANNELS.reduce((s,ch)=>s+g.goalsDollar[ch].reduce((a,b)=>a+b,0),0);
+  const totalActPipe=CHANNELS.reduce((s,ch)=>s+state.actDollar[ch].reduce((a,b)=>a+b,0),0);
+  const impliedRev=totalActPipe*(state.convRate/100);
+  const remaining=Math.max(0,mktgGoal-totalActPipe);
+  return{totalPipe,mktgGoal,totalActOpps,totalGoalOpps,totalGoalPipe,totalActPipe,impliedRev,remaining};
+}
+
+async function lockGoals(){
+  state.goalsLocked=true;state.lockedAt=tsNow();
+  await saveLock();
+  state.changeLog=[{id:Date.now(),ts:tsNow(),type:"lock",desc:"All goals locked",reason:"Forecast finalized"},...state.changeLog];
+  await saveLog();render();
+}
+async function unlockGoals(){
+  state.goalsLocked=false;state.lockedAt=null;
+  await saveLock();
+  state.changeLog=[{id:Date.now(),ts:tsNow(),type:"unlock",desc:"All goals unlocked",reason:"Opened for editing"},...state.changeLog];
+  await saveLog();render();
+}
+
+function showGoalEditModal(ch,qi,isDollar,currentVal){
+  state.modal={ch,qi,isDollar,currentVal};renderModal();
+}
+function closeModal(){state.modal=null;renderModal();}
+
+function renderModal(){
+  const root=document.getElementById("modal-root");
+  if(!state.modal){root.innerHTML="";return;}
+  const m=state.modal;
+  const typeLabel=m.isDollar?"$ Pipeline":"# Opportunities";
+  const displayCur=m.isDollar?fmt$(m.currentVal):fmtN(m.currentVal);
+  const lockStatusBg=state.goalsLocked?"rgba(201,168,76,0.15)":"rgba(29,158,117,0.12)";
+  const lockStatusColor=state.goalsLocked?"#C9A84C":"#1D9E75";
+  const lockStatusLabel=state.goalsLocked?"Locked":"Unlocked";
+
+  root.innerHTML=`
+  <div class="overlay" id="overlay">
+    <div class="modal">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px">
+        <span style="font-family:'Space Mono',monospace;font-size:9px;color:var(--gold);letter-spacing:.22em;text-transform:uppercase">Edit Goal</span>
+        <span style="font-family:'Space Mono',monospace;font-size:9px;color:${lockStatusColor};background:${lockStatusBg};padding:2px 10px;letter-spacing:.12em">${lockStatusLabel}</span>
+      </div>
+      <div style="font-family:'Playfair Display',serif;font-size:18px;font-weight:700;color:#F5F0E8;margin-bottom:4px">${m.ch}</div>
+      <div style="font-family:'Space Mono',monospace;font-size:10px;color:#6B6B5E;margin-bottom:20px;letter-spacing:.06em">${QUARTERS[m.qi]} · ${typeLabel} · Current: <span style="color:#C9A84C;font-weight:700">${displayCur}</span></div>
+
+      <div style="margin-bottom:14px">
+        <div style="font-family:'Space Mono',monospace;font-size:9px;color:#6B6B5E;letter-spacing:.14em;text-transform:uppercase;margin-bottom:8px">New Goal Value <span style="color:#C0392B">*</span></div>
+        <input type="text" id="modal-newval" placeholder="${m.isDollar?"e.g. 450000":"e.g. 18"}" style="width:100%;font-size:14px;padding:8px 12px;background:#141410;border:1px solid rgba(201,168,76,0.3);color:#F5F0E8;" />
+        <div id="modal-val-err" style="font-family:'Space Mono',monospace;font-size:10px;color:#C0392B;margin-top:4px;display:none">Please enter a valid number.</div>
+      </div>
+
+      <div style="margin-bottom:22px">
+        <div style="font-family:'Space Mono',monospace;font-size:9px;color:#6B6B5E;letter-spacing:.14em;text-transform:uppercase;margin-bottom:8px">Reason for Change <span style="color:#C0392B">*</span></div>
+        <textarea id="modal-reason" placeholder="e.g. Revised after Q1 board review — increased inbound target based on new ad spend…" style="background:#141410;border:1px solid rgba(245,240,232,0.07);"></textarea>
+        <div id="modal-reason-err" style="font-family:'Space Mono',monospace;font-size:10px;color:#C0392B;margin-top:4px;display:none">A reason is required to log this change.</div>
+      </div>
+
+      <div style="display:flex;gap:10px;justify-content:flex-end">
+        <button id="modal-cancel" style="padding:8px 18px;background:transparent;border:1px solid rgba(245,240,232,0.12);color:#6B6B5E;letter-spacing:.08em">Cancel</button>
+        <button id="modal-confirm" style="padding:8px 20px;background:#C9A84C;color:#141410;font-weight:700;letter-spacing:.08em">Save &amp; Log Change</button>
+      </div>
+    </div>
+  </div>`;
+
+  document.getElementById("modal-cancel").onclick=closeModal;
+  document.getElementById("overlay").onclick=e=>{if(e.target.id==="overlay")closeModal();};
+  document.getElementById("modal-newval").focus();
+
+  document.getElementById("modal-confirm").onclick=async()=>{
+    const newValRaw=document.getElementById("modal-newval").value;
+    const reason=document.getElementById("modal-reason").value.trim();
+    const valErr=document.getElementById("modal-val-err");
+    const reasonErr=document.getElementById("modal-reason-err");
+    const newVal=parseRaw(newValRaw);
+    let ok=true;
+    if(!newVal){valErr.style.display="block";ok=false;}else{valErr.style.display="none";}
+    if(!reason){reasonErr.style.display="block";ok=false;}else{reasonErr.style.display="none";}
+    if(!ok)return;
+
+    const oldVal=m.isDollar?state.manualGoals.goalsDollar[m.ch][m.qi]:state.manualGoals.goals[m.ch][m.qi];
+    if(m.isDollar){
+      state.manualGoals.goalsDollar[m.ch][m.qi]=newVal;
+      state.manualGoals.goals[m.ch][m.qi]=Math.round(newVal/state.asp);
+    }else{
+      state.manualGoals.goals[m.ch][m.qi]=newVal;
+      state.manualGoals.goalsDollar[m.ch][m.qi]=newVal*state.asp;
+    }
+    await saveGoals();
+    const dir=dirWord(newVal,oldVal);
+    const fromFmt=m.isDollar?fmt$(oldVal):fmtN(oldVal);
+    const toFmt=m.isDollar?fmt$(newVal):fmtN(newVal);
+    const desc=`${m.ch} ${QUARTERS[m.qi]} ${typeLabel} goal ${dir} from ${fromFmt} to ${toFmt}`;
+    const entry={id:Date.now(),ts:tsNow(),type:"goal_edit",desc,from:fromFmt,to:toFmt,ch:m.ch,quarter:QUARTERS[m.qi],metric:typeLabel,dir,reason};
+    state.changeLog=[entry,...state.changeLog];
+    await saveLog();
+    closeModal();render();
+  };
+}
+
+// ── Cell renderers ──────────────────────────────────────────────────
+function pctBadge(a,g){
+  return`<span style="font-family:'Space Mono',monospace;font-weight:700;font-size:10px;color:${pctColor(a,g)};background:${pctBg(a,g)};padding:2px 8px;letter-spacing:.06em;white-space:nowrap">${fmtPct(a,g)}</span>`;
+}
+
+function goalCell(val,ch,qi,isDollar){
+  const locked=state.goalsLocked;
+  const display=isDollar?fmt$(val):fmtN(val);
+  const hint=locked?"Click to edit (reason required)":"Click to edit goal";
+  return`<td style="padding:4px 6px;text-align:center;background:rgba(201,168,76,0.06)">
+    <span data-goal-click="1" data-ch="${ch}" data-qi="${qi}" data-dollar="${isDollar?1:0}" data-val="${val}"
+      title="${hint}"
+      style="cursor:pointer;padding:2px 8px;display:inline-flex;align-items:center;gap:4px;min-width:${isDollar?60:36}px;
+        background:rgba(201,168,76,0.1);border:1px solid rgba(201,168,76,${locked?'0.5':'0.25'});
+        font-size:${isDollar?10:11}px;color:#C9A84C;font-weight:700;font-family:'Space Mono',monospace;white-space:nowrap">
+      ${locked?`<svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="#C9A84C" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>`:""}
+      ${display}
+    </span>
+  </td>`;
+}
+
+function actualCell(val,ch,qi,isDollar){
+  const cellId=`act-${ch.replace(/[^a-z]/gi,'')}-${qi}${isDollar?'-d':''}`;
+  const display=isDollar?fmt$(val):fmtN(val);
+  const isEditing=state.editCell===cellId;
+  if(isEditing){
+    return`<td style="padding:4px 6px;text-align:center">
+      <input type="text" id="${cellId}-input" value="${val}"
+        data-ch="${ch}" data-qi="${qi}" data-dollar="${isDollar?1:0}" data-cell="${cellId}"
+        style="width:${isDollar?80:52}px;text-align:center;border:1px solid #1D9E75;padding:2px 6px;font-size:${isDollar?10:11}px;font-family:'Space Mono',monospace;font-weight:700;color:#F5F0E8;outline:none;background:#141410;" />
+    </td>`;
+  }
+  return`<td style="padding:4px 6px;text-align:center">
+    <span data-edit="${cellId}" data-ch="${ch}" data-qi="${qi}" data-dollar="${isDollar?1:0}"
+      style="cursor:pointer;padding:2px 8px;display:inline-block;min-width:${isDollar?60:36}px;background:rgba(29,158,117,0.1);border:1px solid rgba(29,158,117,0.3);font-size:${isDollar?10:11}px;color:#1D9E75;font-weight:700;font-family:'Space Mono',monospace">
+      ${display}
+    </span>
+  </td>`;
+}
+
+function refInput(label,val,key,prefix,suffix,w=100){
+  const lk=state.goalsLocked;
+  return`<div style="display:flex;flex-direction:column;gap:5px">
+    <span style="font-family:'Space Mono',monospace;font-weight:700;font-size:9px;color:${lk?'#6B6B5E':'#C9A84C'};letter-spacing:.14em;text-transform:uppercase">${label}</span>
+    <div style="display:flex;align-items:center;gap:4px">
+      ${prefix?`<span style="font-family:'Space Mono',monospace;font-weight:700;color:${lk?'#6B6B5E':'#6B6B5E'};font-size:12px">${prefix}</span>`:""}
+      <input type="text" data-refkey="${key}" value="${fmtN(val)}" style="width:${w}px;${lk?'':'border-color:rgba(201,168,76,0.3);'}" class="${lk?'locked-ref':''}" ${lk?'readonly':''} />
+      ${suffix?`<span style="font-family:'Space Mono',monospace;font-weight:700;color:#6B6B5E;font-size:12px">${suffix}</span>`:""}
+    </div>
+  </div>`;
+}
+
+const lockSVG=(color,open=false)=>`<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="${color}" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/>${open?'<line x1="8" y1="15" x2="16" y2="15"/>':''}</svg>`;
+
+// ── Main render ─────────────────────────────────────────────────────
+function render(){
+  if(!state.loaded)return;
+  const g=getGoals();
+  const dt=deriveTotals();
+  const locked=state.goalsLocked;
+  const GoalC="#C9A84C";
+  const ActC="#1D9E75";
+  const rowBg=i=>i%2===0?"#1E1E18":"rgba(245,240,232,0.02)";
+
+  const kpis=QUARTERS.map((q,qi)=>({
+    q,gO:sumCol(g.goals,qi),aO:sumCol(state.actuals,qi),
+    gP:CHANNELS.reduce((s,ch)=>s+g.goalsDollar[ch][qi],0),
+    aP:CHANNELS.reduce((s,ch)=>s+state.actDollar[ch][qi],0)
+  }));
+
+  const summaryRows=[
+    {label:"Company Revenue Goal (ARR)",goal:fmt$(state.revGoal),actual:fmt$(state.revActual),pA:state.revActual,pG:state.revGoal,note:`Actual: ${fmt$(state.revActual)} entered above`},
+    {label:`Total Pipeline Required (÷${state.convRate}%)`,goal:fmtM(dt.totalPipe),actual:fmtM(dt.totalActPipe),pA:dt.totalActPipe,pG:dt.totalPipe,note:`${fmt$(state.revGoal)} ÷ ${state.convRate}%`},
+    {label:`Mktg Sourced Pipeline (${state.mktgPct}%)`,goal:fmtM(dt.mktgGoal),actual:fmtM(dt.totalActPipe),pA:dt.totalActPipe,pG:dt.mktgGoal,note:`${state.mktgPct}% of ${fmtM(dt.totalPipe)}`},
+    {label:`Implied Revenue (${state.convRate}% conv.)`,goal:fmt$(state.revGoal),actual:fmt$(dt.impliedRev),pA:dt.impliedRev,pG:state.revGoal,note:`Actual pipeline × ${state.convRate}%`},
+    {label:"Total Opps",goal:fmtN(dt.totalGoalOpps),actual:fmtN(dt.totalActOpps),pA:dt.totalActOpps,pG:dt.totalGoalOpps,note:`@ ${fmt$(state.asp)} ASP`},
+  ];
+
+  let html=`
+  <!-- ── HEADER ── -->
+  <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:28px;padding-bottom:24px;border-bottom:1px solid rgba(201,168,76,0.2);flex-wrap:wrap;gap:12px;position:relative;" class="mob-header">
+    <div style="position:absolute;bottom:0;left:0;right:0;height:2px;background:linear-gradient(90deg,#C9A84C,transparent);opacity:.3;"></div>
+    <div>
+      <!-- punsandrosess logo -->
+      <div style="display:flex;align-items:baseline;gap:0;margin-bottom:10px;line-height:1">
+        <span style="font-family:'Playfair Display',serif;font-weight:900;font-size:22px;color:#F5F0E8;letter-spacing:-.02em">puns</span><em style="font-family:'Playfair Display',serif;font-weight:700;font-size:22px;color:#C9A84C;font-style:italic;letter-spacing:-.01em">androsess</em>
+      </div>
+      <div style="display:flex;align-items:center;gap:8px">
+        <span style="font-family:'Space Mono',monospace;font-size:9px;color:#C9A84C;letter-spacing:.22em;text-transform:uppercase">Marketing · FY2026</span>
+        <span style="color:rgba(201,168,76,0.3)">·</span>
+        <span style="font-family:'Space Mono',monospace;font-size:9px;color:#6B6B5E;letter-spacing:.1em">Pipeline &amp; Demand Generation</span>
+      </div>
+    </div>
+    <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap" class="mob-header-right">
+      <span id="save-flash" class="flash">✓ SAVED</span>
+      ${locked
+        ?`<div style="display:flex;align-items:center;gap:8px;background:rgba(201,168,76,0.08);border:1px solid rgba(201,168,76,0.3);padding:6px 12px;color:#C9A84C" class="mob-lock-pill">
+            ${lockSVG("#C9A84C")}
+            <span style="font-family:'Space Mono',monospace;font-size:9px;letter-spacing:.1em">Locked ${state.lockedAt||""}</span>
+            <button id="btn-unlock" style="background:#C9A84C;color:#141410;padding:3px 12px;font-size:9px;margin-left:2px;letter-spacing:.1em">Unlock</button>
+          </div>`
+        :`<div style="display:flex;align-items:center;gap:8px;background:rgba(29,158,117,0.08);border:1px solid rgba(29,158,117,0.3);padding:6px 12px" class="mob-lock-pill">
+            ${lockSVG("#1D9E75",true)}
+            <span style="font-family:'Space Mono',monospace;font-size:9px;color:#1D9E75;letter-spacing:.1em">Unlocked — click any goal to edit</span>
+            <button id="btn-lock" style="background:#1D9E75;color:#141410;padding:3px 12px;font-size:9px;margin-left:2px;letter-spacing:.1em">Lock Goals</button>
+          </div>`
+      }
+      <div style="display:flex;gap:12px;flex-wrap:wrap" class="mob-legend">
+        ${[{l:"Goal",c:GoalC},{l:"Actual",c:ActC},{l:"≥100%",c:"#1D9E75"},{l:"≥75%",c:"#C9893A"},{l:"<75%",c:"#C0392B"}].map(x=>`<div style="display:flex;align-items:center;gap:5px"><div style="width:6px;height:6px;background:${x.c}"></div><span style="font-family:'Space Mono',monospace;font-size:9px;color:#6B6B5E;letter-spacing:.1em">${x.l}</span></div>`).join("")}
+      </div>
+    </div>
+  </div>
+
+  <!-- ── HERO BANNER ── -->
+  <div style="background:var(--card);border:1px solid rgba(201,168,76,0.3);border-left:3px solid #C9A84C;padding:28px 32px;margin-bottom:20px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:20px;position:relative;overflow:hidden;">
+    <div style="position:absolute;right:-10px;bottom:-10px;font-family:'Playfair Display',serif;font-size:130px;font-weight:900;color:rgba(201,168,76,0.04);line-height:1;user-select:none;pointer-events:none;">P</div>
+    <div style="position:absolute;top:8px;right:8px;width:14px;height:14px;border-top:1px solid rgba(201,168,76,0.4);border-right:1px solid rgba(201,168,76,0.4);"></div>
+    <div style="position:absolute;bottom:8px;left:32px;width:14px;height:14px;border-bottom:1px solid rgba(201,168,76,0.4);border-left:1px solid rgba(201,168,76,0.4);"></div>
+    <div>
+      <div style="font-family:'Space Mono',monospace;font-size:9px;color:rgba(201,168,76,0.6);letter-spacing:.22em;text-transform:uppercase;margin-bottom:8px">Marketing Pipeline Goal</div>
+      <div style="font-family:'Playfair Display',serif;font-size:40px;font-weight:900;color:#F5F0E8;letter-spacing:-.02em;line-height:1">${fmtM(dt.mktgGoal).replace('$','').replace('M','')}<em style="color:#C9A84C;font-style:italic">M</em></div>
+      <div style="font-family:'Space Mono',monospace;color:#6B6B5E;font-size:10px;margin-top:6px;letter-spacing:.06em">${state.mktgPct}% of ${fmtM(dt.totalPipe)} required · ${fmt$(state.revGoal)} ÷ ${state.convRate}% conv.</div>
+    </div>
+    <div style="display:flex;gap:32px;flex-wrap:wrap" class="mob-hero-stats">
+      ${[{l:"Actual Pipeline",v:fmtM(dt.totalActPipe)},{l:"% to Goal",v:fmtPct(dt.totalActPipe,dt.mktgGoal)},{l:"Remaining",v:fmtM(dt.remaining)}].map(k=>`
+        <div style="text-align:center">
+          <div style="font-family:'Space Mono',monospace;color:#6B6B5E;font-size:9px;text-transform:uppercase;letter-spacing:.16em;margin-bottom:6px">${k.l}</div>
+          <div style="font-family:'Playfair Display',serif;font-size:24px;font-weight:700;color:#F5F0E8">${k.v}</div>
+        </div>`).join("")}
+    </div>
+    <div style="position:absolute;bottom:0;left:0;right:0;height:1px;background:linear-gradient(90deg,#C9A84C,transparent);opacity:.2;"></div>
+  </div>
+
+  <!-- ── GLOBAL REFS ── -->
+  <div class="card">
+    <span class="sec-label">Global References</span>
+    <div style="display:flex;flex-wrap:wrap;gap:20px;align-items:flex-end;margin-bottom:16px" class="mob-refs">
+      ${refInput("ASP",state.asp,"asp","$","",100)}
+      ${refInput("Conv. Rate",state.convRate,"convRate","","%",55)}
+      ${refInput("Mktg Pipeline %",state.mktgPct,"mktgPct","","%",55)}
+      ${refInput("Revenue Goal",state.revGoal,"revGoal","$","",120)}
+      ${refInput("Revenue Actuals",state.revActual,"revActual","$","",120)}
+      <div style="display:flex;flex-direction:column;gap:5px">
+        <span style="font-family:'Space Mono',monospace;font-weight:700;font-size:9px;color:#6B6B5E;letter-spacing:.14em;text-transform:uppercase">Total Pipeline Req</span>
+        <div style="font-family:'Space Mono',monospace;font-size:13px;color:#C9A84C;padding:5px 10px;background:rgba(201,168,76,0.1);border:1px solid rgba(201,168,76,0.25);min-width:110px;text-align:right">${fmtM(dt.totalPipe)}</div>
+      </div>
+    </div>
+    <div style="border-top:1px solid rgba(245,240,232,0.07);padding-top:16px">
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px;flex-wrap:wrap">
+        <span style="font-family:'Space Mono',monospace;font-size:9px;color:#6B6B5E;letter-spacing:.14em;text-transform:uppercase">Pipeline Goal by Quarter</span>
+        <span style="font-family:'Space Mono',monospace;font-size:9px;color:${locked?"#C9A84C":"#1D9E75"};background:${locked?"rgba(201,168,76,0.1)":"rgba(29,158,117,0.1)"};padding:2px 10px;letter-spacing:.1em">${locked?"locked":"unlocked"}</span>
+      </div>
+      <div style="display:flex;gap:16px;flex-wrap:wrap;align-items:flex-end" class="mob-qgoals">
+        ${QUARTERS.map((q,i)=>{
+          const qv=CHANNELS.reduce((s,ch)=>s+g.goalsDollar[ch][i],0);
+          const opps=sumCol(g.goals,i);
+          return`<div style="display:flex;flex-direction:column;gap:4px">
+            <span style="font-family:'Space Mono',monospace;color:#6B6B5E;font-size:9px;letter-spacing:.1em">${q}</span>
+            <div style="font-family:'Space Mono',monospace;font-size:13px;color:${locked?"#C9A84C":"#1D9E75"};padding:5px 12px;background:${locked?"rgba(201,168,76,0.1)":"rgba(29,158,117,0.1)"};border:1px solid ${locked?"rgba(201,168,76,0.3)":"rgba(29,158,117,0.3)"};min-width:100px;text-align:right">${fmtM(qv)}</div>
+            <span style="font-family:'Space Mono',monospace;color:#6B6B5E;font-size:9px">${fmtN(opps)} opps</span>
+          </div>`;
+        }).join("")}
+        <div style="display:flex;flex-direction:column;justify-content:flex-end;padding-bottom:2px">
+          <span style="font-family:'Space Mono',monospace;color:${locked?"#C9A84C":"#1D9E75"};font-size:11px">Total: ${fmtM(dt.totalGoalPipe)}</span>
+          <span style="font-family:'Space Mono',monospace;color:#6B6B5E;font-size:9px">${fmtN(Math.round(dt.totalGoalPipe/state.asp))} opps</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── SUMMARY TABLE ── -->
+  <div class="card">
+    <span class="sec-label">Revenue &amp; Pipeline Summary</span>
+    <div style="overflow-x:auto"><table class="mob-summary">
+      <thead><tr>
+        <th style="text-align:left">Metric</th>
+        <th style="color:${GoalC}">Goal</th>
+        <th style="color:${ActC}">Actual / Projected</th>
+        <th>% to Goal</th><th>Notes</th>
+      </tr></thead>
+      <tbody>
+        ${summaryRows.map((r,i)=>`<tr style="background:${rowBg(i)}">
+          <td style="padding:9px 10px;color:#F5F0E8;font-weight:700;text-align:left;font-family:'Source Serif 4',serif;font-size:13px">${r.label}</td>
+          <td style="padding:9px 10px;text-align:center;color:${GoalC};font-weight:700;font-family:'Space Mono',monospace;font-size:11px">${r.goal}</td>
+          <td style="padding:9px 10px;text-align:center;color:${ActC};font-weight:700;font-family:'Space Mono',monospace;font-size:11px">${r.actual}</td>
+          <td style="padding:9px 10px;text-align:center">${pctBadge(r.pA,r.pG)}</td>
+          <td style="padding:9px 10px;color:#6B6B5E;font-family:'Space Mono',monospace;font-size:9px;letter-spacing:.06em">${r.note||"—"}</td>
+        </tr>`).join("")}
+      </tbody>
+    </table></div>
+  </div>
+
+  <!-- ── KPI QUARTER CARDS ── -->
+  <div style="display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;margin-bottom:20px" class="mob-kpi-grid">
+    ${kpis.map(k=>{
+      const pc=pctColor(k.aP,k.gP),pb=pctBg(k.aP,k.gP);
+      const prog=Math.min(100,k.gP>0?(k.aP/k.gP)*100:0);
+      return`<div style="background:#1E1E18;border:1px solid ${locked?"rgba(201,168,76,0.3)":"rgba(245,240,232,0.07)"};border-left:2px solid #C9A84C;padding:16px 18px;position:relative;">
+        <div style="position:absolute;top:5px;right:5px;width:8px;height:8px;border-top:1px solid rgba(201,168,76,0.3);border-right:1px solid rgba(201,168,76,0.3);"></div>
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px">
+          <div style="font-family:'Space Mono',monospace;color:#C9A84C;font-weight:700;font-size:9px;letter-spacing:.18em">${k.q}</div>
+          ${lockSVG(locked?"#C9A84C":"#1D9E75",!locked)}
+        </div>
+        <div style="display:flex;justify-content:space-between;margin-bottom:4px">
+          <span style="color:#6B6B5E;font-size:11px;font-family:'Source Serif 4',serif;font-style:italic">Opps</span>
+          <span style="font-family:'Space Mono',monospace;font-size:11px"><span style="color:${ActC};font-weight:700">${fmtN(k.aO)}</span><span style="color:#6B6B5E"> / </span><span style="color:${GoalC};font-weight:700">${fmtN(k.gO)}</span></span>
+        </div>
+        <div style="display:flex;justify-content:space-between;margin-bottom:10px">
+          <span style="color:#6B6B5E;font-size:11px;font-family:'Source Serif 4',serif;font-style:italic">Pipeline</span>
+          <span style="font-family:'Space Mono',monospace;font-size:10px;font-weight:700;color:${pc};background:${pb};padding:1px 8px">${fmtPct(k.aP,k.gP)}</span>
+        </div>
+        <div style="height:2px;background:rgba(245,240,232,0.07);margin-bottom:10px">
+          <div style="height:2px;width:${prog}%;background:${pc}"></div>
+        </div>
+        <div style="display:flex;justify-content:space-between">
+          <span style="font-family:'Space Mono',monospace;color:${ActC};font-size:10px;font-weight:700">${fmtM(k.aP)}</span>
+          <span style="font-family:'Space Mono',monospace;color:#6B6B5E;font-size:9px">Goal ${fmtM(k.gP)}</span>
+        </div>
+      </div>`;
+    }).join("")}
+  </div>
+
+  <!-- ── TABS ── -->
+  <div style="display:flex;gap:2px;margin-bottom:16px;background:#1E1E18;padding:3px;width:fit-content;border:1px solid rgba(245,240,232,0.07)" class="mob-tab-bar">
+    ${[["opps","# Opportunities"],["dollars","$ Pipeline"],["log","Change Log"+(state.changeLog.length?` (${state.changeLog.length})`:"")]].map(([k,l])=>`<button data-tab="${k}" style="padding:7px 20px;font-weight:700;font-size:9px;letter-spacing:.12em;text-transform:uppercase;background:${state.tab===k?"#C9A84C":"transparent"};color:${state.tab===k?"#141410":"#6B6B5E"}">${l}</button>`).join("")}
+  </div>`;
+
+  const tableHint=locked
+    ?`<div style="font-family:'Space Mono',monospace;font-size:9px;color:#C9A84C;margin-bottom:10px;display:flex;align-items:center;gap:6px;letter-spacing:.1em">${lockSVG("#C9A84C")} Goals locked — click any gold goal cell to revise (reason required)</div>`
+    :`<div style="font-family:'Space Mono',monospace;font-size:9px;color:#1D9E75;margin-bottom:10px;display:flex;align-items:center;gap:6px;letter-spacing:.1em">${lockSVG("#1D9E75",true)} Goals unlocked — click any gold goal cell to edit (reason always logged)</div>`;
+
+  if(state.tab==="opps"){
+    html+=tableHint+`<div style="overflow-x:auto;margin-bottom:8px"><table>
+      <thead><tr>
+        <th style="text-align:left">Channel</th>
+        ${QUARTERS.map(()=>`<th style="color:${GoalC}">Goal${locked?" 🔒":""}</th><th style="color:${ActC}">Actual</th><th>%</th>`).join("")}
+        <th style="color:${GoalC}">Total Goal</th><th style="color:${ActC}">Total Actual</th><th>Total %</th>
+      </tr></thead>
+      <tbody>
+        ${CHANNELS.map((ch,i)=>`<tr style="background:${rowBg(i)}">
+          <td style="padding:7px 10px;color:#F5F0E8;font-weight:700;font-size:11px;border-right:1px solid rgba(245,240,232,0.07);text-align:left;font-family:'Source Serif 4',serif">${ch}</td>
+          ${QUARTERS.map((_,qi)=>`${goalCell(g.goals[ch][qi],ch,qi,false)}${actualCell(state.actuals[ch][qi],ch,qi,false)}<td style="padding:5px 6px">${pctBadge(state.actuals[ch][qi],g.goals[ch][qi])}</td>`).join("")}
+          <td style="padding:6px 8px;color:${GoalC};font-weight:700;font-family:'Space Mono',monospace;font-size:10px;background:rgba(201,168,76,0.06)">${fmtN(sumRow(g.goals,ch))}</td>
+          <td style="padding:6px 8px;color:${ActC};font-weight:700;font-family:'Space Mono',monospace;font-size:10px">${fmtN(sumRow(state.actuals,ch))}</td>
+          <td style="padding:5px 6px">${pctBadge(sumRow(state.actuals,ch),sumRow(g.goals,ch))}</td>
+        </tr>`).join("")}
+        <tr style="border-top:1px solid rgba(201,168,76,0.25)">
+          <td style="padding:8px 10px;color:#F5F0E8;font-weight:700;font-size:11px;text-align:left;font-family:'Space Mono',monospace;letter-spacing:.06em">Total Opps</td>
+          ${QUARTERS.map((_,qi)=>{const gv=sumCol(g.goals,qi),av=sumCol(state.actuals,qi);return`<td style="padding:6px 8px;color:${GoalC};font-weight:700;font-family:'Space Mono',monospace;font-size:10px;background:rgba(201,168,76,0.06)">${fmtN(gv)}</td><td style="padding:6px 8px;color:${ActC};font-weight:700;font-family:'Space Mono',monospace;font-size:10px">${fmtN(av)}</td><td style="padding:5px 6px">${pctBadge(av,gv)}</td>`}).join("")}
+          <td style="padding:6px 8px;color:${GoalC};font-weight:700;font-family:'Space Mono',monospace;font-size:10px;background:rgba(201,168,76,0.06)">${fmtN(dt.totalGoalOpps)}</td>
+          <td style="padding:6px 8px;color:${ActC};font-weight:700;font-family:'Space Mono',monospace;font-size:10px">${fmtN(dt.totalActOpps)}</td>
+          <td style="padding:5px 6px">${pctBadge(dt.totalActOpps,dt.totalGoalOpps)}</td>
+        </tr>
+        <tr>
+          <td style="padding:5px 10px;color:#6B6B5E;font-family:'Space Mono',monospace;font-size:9px;text-align:left;letter-spacing:.08em">Avg Opps / Week</td>
+          ${QUARTERS.map((_,qi)=>`<td style="padding:5px 8px;color:#6B6B5E;font-family:'Space Mono',monospace;font-size:9px">${(sumCol(g.goals,qi)/WEEKS).toFixed(1)}</td><td></td><td></td>`).join("")}
+          <td></td><td></td><td></td>
+        </tr>
+      </tbody>
+    </table></div>`;
+
+  } else if(state.tab==="dollars"){
+    html+=tableHint+`<div style="overflow-x:auto;margin-bottom:8px"><table>
+      <thead><tr>
+        <th style="text-align:left">Channel</th>
+        ${QUARTERS.map(()=>`<th style="color:${GoalC}">Goal${locked?" 🔒":""}</th><th style="color:${ActC}">Actual</th><th>%</th>`).join("")}
+        <th style="color:${GoalC}">Total Goal</th><th style="color:${ActC}">Total Actual</th><th>Total %</th>
+      </tr></thead>
+      <tbody>
+        ${CHANNELS.map((ch,i)=>`<tr style="background:${rowBg(i)}">
+          <td style="padding:7px 10px;color:#F5F0E8;font-weight:700;font-size:11px;border-right:1px solid rgba(245,240,232,0.07);text-align:left;font-family:'Source Serif 4',serif">${ch}</td>
+          ${QUARTERS.map((_,qi)=>`${goalCell(g.goalsDollar[ch][qi],ch,qi,true)}${actualCell(state.actDollar[ch][qi],ch,qi,true)}<td style="padding:5px 6px">${pctBadge(state.actDollar[ch][qi],g.goalsDollar[ch][qi])}</td>`).join("")}
+          <td style="padding:6px 8px;color:${GoalC};font-weight:700;font-family:'Space Mono',monospace;font-size:10px;background:rgba(201,168,76,0.06)">${fmt$(g.goalsDollar[ch].reduce((a,b)=>a+b,0))}</td>
+          <td style="padding:6px 8px;color:${ActC};font-weight:700;font-family:'Space Mono',monospace;font-size:10px">${fmt$(state.actDollar[ch].reduce((a,b)=>a+b,0))}</td>
+          <td style="padding:5px 6px">${pctBadge(state.actDollar[ch].reduce((a,b)=>a+b,0),g.goalsDollar[ch].reduce((a,b)=>a+b,0))}</td>
+        </tr>`).join("")}
+        <tr style="border-top:1px solid rgba(201,168,76,0.25)">
+          <td style="padding:8px 10px;color:#F5F0E8;font-weight:700;font-size:11px;text-align:left;font-family:'Space Mono',monospace;letter-spacing:.06em">Total Pipeline</td>
+          ${QUARTERS.map((_,qi)=>{const gv=CHANNELS.reduce((s,ch)=>s+g.goalsDollar[ch][qi],0),av=CHANNELS.reduce((s,ch)=>s+state.actDollar[ch][qi],0);return`<td style="padding:6px 8px;color:${GoalC};font-weight:700;font-family:'Space Mono',monospace;font-size:10px;background:rgba(201,168,76,0.06)">${fmt$(gv)}</td><td style="padding:6px 8px;color:${ActC};font-weight:700;font-family:'Space Mono',monospace;font-size:10px">${fmt$(av)}</td><td style="padding:5px 6px">${pctBadge(av,gv)}</td>`}).join("")}
+          <td style="padding:6px 8px;color:${GoalC};font-weight:700;font-family:'Space Mono',monospace;font-size:10px;background:rgba(201,168,76,0.06)">${fmt$(dt.totalGoalPipe)}</td>
+          <td style="padding:6px 8px;color:${ActC};font-weight:700;font-family:'Space Mono',monospace;font-size:10px">${fmt$(dt.totalActPipe)}</td>
+          <td style="padding:5px 6px">${pctBadge(dt.totalActPipe,dt.totalGoalPipe)}</td>
+        </tr>
+        <tr>
+          <td style="padding:5px 10px;color:#6B6B5E;font-family:'Space Mono',monospace;font-size:9px;text-align:left;letter-spacing:.08em">Avg $ / Week Req</td>
+          ${QUARTERS.map((_,qi)=>`<td style="padding:5px 8px;color:#6B6B5E;font-family:'Space Mono',monospace;font-size:9px">${fmt$(CHANNELS.reduce((s,ch)=>s+g.goalsDollar[ch][qi],0)/WEEKS)}</td><td></td><td></td>`).join("")}
+          <td></td><td></td><td></td>
+        </tr>
+      </tbody>
+    </table></div>`;
+
+  } else {
+    // ── Change Log ──
+    html+=`<div class="card" style="margin-bottom:8px">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px">
+        <span class="sec-label" style="margin-bottom:0">Goal Change Log</span>
+        <span style="font-family:'Space Mono',monospace;font-size:9px;color:#6B6B5E;letter-spacing:.1em">${state.changeLog.length} ${state.changeLog.length===1?"entry":"entries"} · shared</span>
+      </div>
+      ${state.changeLog.length===0
+        ?`<div style="text-align:center;padding:40px 0;font-family:'Source Serif 4',serif;font-style:italic;font-size:14px;color:#6B6B5E">No changes logged yet.<br><span style="font-size:12px">Every goal edit requires a reason and is recorded here.</span></div>`
+        :`<div style="display:flex;flex-direction:column;gap:10px">
+          ${state.changeLog.map(e=>{
+            const typeColors={lock:{color:"#C9A84C",label:"Locked"},unlock:{color:"#1D9E75",label:"Unlocked"},goal_edit:{color:"#C9A84C",label:"Goal Edit"}};
+            const ts=typeColors[e.type]||{color:"#6B6B5E",label:e.type};
+            const dirColor=e.dir==="increased"?"#1D9E75":e.dir==="decreased"?"#C0392B":"#6B6B5E";
+            return`<div style="background:#141410;border:1px solid rgba(245,240,232,0.07);border-left:2px solid ${ts.color};padding:12px 16px" class="mob-log-entry">
+              <div style="display:flex;align-items:flex-start;gap:10px;margin-bottom:10px;flex-wrap:wrap" class="mob-log-header">
+                <span style="font-family:'Space Mono',monospace;font-size:9px;font-weight:700;color:${ts.color};letter-spacing:.14em;text-transform:uppercase;white-space:nowrap">${ts.label}</span>
+                <span style="font-family:'Source Serif 4',serif;font-size:13px;color:#F5F0E8;flex:1">${e.desc}</span>
+                <span style="font-family:'Space Mono',monospace;font-size:9px;color:#6B6B5E;white-space:nowrap;letter-spacing:.06em">${e.ts}</span>
+              </div>
+              ${e.from!=null?`<div style="font-family:'Space Mono',monospace;font-size:10px;margin-bottom:10px;display:flex;align-items:center;gap:6px">
+                <span style="color:#6B6B5E">Changed:</span>
+                <span style="color:#C0392B;text-decoration:line-through">${e.from}</span>
+                <span style="color:#6B6B5E">→</span>
+                <span style="color:${dirColor};font-weight:700">${e.to}</span>
+                <span style="color:${dirColor};font-size:9px">(${e.dir})</span>
+              </div>`:""}
+              <div style="background:#1E1E18;border:1px solid rgba(245,240,232,0.07);padding:8px 12px">
+                <span style="font-family:'Space Mono',monospace;font-size:9px;color:#6B6B5E;text-transform:uppercase;letter-spacing:.12em">Reason: </span>
+                <span style="font-family:'Source Serif 4',serif;font-style:italic;font-size:13px;color:#F5F0E8">${e.reason}</span>
+              </div>
+            </div>`;
+          }).join("")}
+        </div>`
+      }
+    </div>`;
+  }
+
+  html+=`<div style="margin-top:16px;font-family:'Space Mono',monospace;color:#6B6B5E;font-size:9px;letter-spacing:.1em;border-top:1px solid rgba(245,240,232,0.07);padding-top:12px">
+    <span style="color:${GoalC}">GOLD</span> = goals (reason always required) · <span style="color:${ActC}">GREEN</span> = actuals (free edit, auto-save) · Data shared across all viewers
+  </div>`;
+
+  document.getElementById("app").innerHTML=html;
+  bindEvents();
+  renderModal();
+}
+
+function bindEvents(){
+  const lb=document.getElementById("btn-lock");
+  const ub=document.getElementById("btn-unlock");
+  if(lb)lb.addEventListener("click",lockGoals);
+  if(ub)ub.addEventListener("click",unlockGoals);
+
+  document.querySelectorAll("[data-refkey]").forEach(inp=>{
+    if(inp.readOnly)return;
+    inp.addEventListener("blur",async e=>{state[e.target.dataset.refkey]=parseRaw(e.target.value);await saveRefs();state.editCell=null;render();});
+    inp.addEventListener("keydown",e=>{if(e.key==="Enter")e.target.blur();});
+  });
+
+  document.querySelectorAll("[data-tab]").forEach(btn=>{
+    btn.addEventListener("click",e=>{state.tab=e.currentTarget.dataset.tab;state.editCell=null;render();});
+  });
+
+  document.querySelectorAll("[data-goal-click]").forEach(span=>{
+    span.addEventListener("click",e=>{
+      const el=e.currentTarget;
+      showGoalEditModal(el.dataset.ch,parseInt(el.dataset.qi),el.dataset.dollar==="1",parseRaw(el.dataset.val));
+    });
+  });
+
+  document.querySelectorAll("[data-edit]").forEach(span=>{
+    span.addEventListener("click",e=>{
+      state.editCell=e.currentTarget.dataset.edit;render();
+      setTimeout(()=>{const inp=document.getElementById(state.editCell+"-input");if(inp){inp.focus();inp.select();}},10);
+    });
+  });
+  document.querySelectorAll("[data-cell]").forEach(inp=>{
+    const commit=async e=>{
+      const ch=e.target.dataset.ch,qi=parseInt(e.target.dataset.qi),isDollar=e.target.dataset.dollar==="1";
+      if(isDollar){state.actDollar[ch][qi]=parseRaw(e.target.value);}else{state.actuals[ch][qi]=parseRaw(e.target.value);}
+      await saveActuals();state.editCell=null;render();
+    };
+    inp.addEventListener("blur",commit);
+    inp.addEventListener("keydown",e=>{if(e.key==="Enter")e.target.blur();});
+  });
+}
+
+loadFromStorage();
+</script>

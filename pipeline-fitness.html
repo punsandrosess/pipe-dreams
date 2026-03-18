@@ -25,7 +25,8 @@ input,textarea,select,button{font-family:inherit}
 }
 /* ===== LAYOUT ===== */
 #app{max-width:1280px;margin:0 auto;padding:24px 20px}
-.hdr{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;margin-bottom:24px}
+.hdr{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;margin-bottom:24px;padding-bottom:20px;border-bottom:1px solid rgba(201,168,76,0.2);position:relative}
+.hdr::after{content:'';position:absolute;bottom:0;left:0;right:0;height:1px;background:linear-gradient(90deg,#C9A84C,transparent);opacity:.3}
 .hdr-left{display:flex;align-items:center;gap:20px;flex-wrap:wrap}
 .hdr-right{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
 /* ===== TABS ===== */
@@ -235,647 +236,121 @@ const BENCH_PROFILES = {
 };
 // ===== CONVERSION STAGE DEFINITIONS =====
 const CONVS = [
-  {
-    id:'v_l', from:'visitors', to:'leads',
-    label:'Capture Rate', short:'Capture',
-    failureLabel:'Poor visitor capture',
-    failureDesc:'Your site converts visitors to leads far below benchmark, meaning most demand evaporates before it enters the pipeline.',
-    rootCauses:[
-      'CTA placement or messaging is misaligned with visitor intent',
-      'Landing pages lack specific value propositions for each persona',
-      'Form friction is too high — too many fields or gated content mismatch',
-      'Traffic sources are untargeted or bring low-intent visitors',
-      'No progressive profiling or exit-intent capture in place'
-    ],
-    questions:[
-      'What is the primary CTA above the fold for your highest-traffic page?',
-      'Which traffic sources drive the highest lead conversion rate?',
-      'How many fields are on your primary lead capture form?',
-      'Are landing pages personalised by campaign or persona?',
-      'What percentage of visitors reach a lead-capture page at all?'
-    ],
-    actions:[
-      'Run A/B tests on hero CTA copy and placement targeting top 3 intent signals',
-      'Reduce primary form to 3-4 fields; move enrichment to post-conversion',
-      'Create dedicated landing pages per high-volume campaign or ICP segment',
-      'Implement exit-intent overlays with content offers tied to page context',
-      'Audit traffic quality — pause or optimise channels with <1% lead rate'
-    ],
-    impact:'Each 1pp improvement in capture rate adds significant lead volume with no increase in ad spend.'
-  },
-  {
-    id:'l_m', from:'leads', to:'mqls',
-    label:'Lead Quality', short:'Lead Qual',
-    failureLabel:'Low lead quality',
-    failureDesc:'Less than the benchmark proportion of leads reach MQL status, indicating your captured leads are poorly qualified or scoring models are mis-calibrated.',
-    rootCauses:[
-      'Lead scoring model weights signals that do not correlate with buyer intent',
-      'Content attracts top-of-funnel browsers rather than in-market buyers',
-      'ICP definition is too broad, allowing non-target companies to enter',
-      'No nurture sequence to qualify and progress marketing-captured leads',
-      'MQL definition is misaligned between marketing and sales teams'
-    ],
-    questions:[
-      'What are the top 3 behavioural triggers that move a lead to MQL today?',
-      'What percentage of MQLs are rejected by sales within 48 hours?',
-      'When did you last audit the correlation between lead score and win rate?',
-      'Is there a documented MQL definition agreed upon by sales leadership?',
-      'Which content pieces generate the highest MQL-to-SQL conversion?'
-    ],
-    actions:[
-      'Conduct a retrospective analysis of won deals to recalibrate lead scoring weights',
-      'Add firmographic filters (company size, industry) to disqualify non-ICP leads early',
-      'Build a 3-touch nurture sequence for newly captured leads before MQL evaluation',
-      'Run a joint marketing-sales workshop to align on MQL definition and handoff SLA',
-      'Gate high-intent content (ROI calculators, comparison guides) to improve captured quality'
-    ],
-    impact:'Improving lead quality reduces wasted sales cycles and directly raises SQL and opportunity volume.'
-  },
-  {
-    id:'m_s', from:'mqls', to:'sqls',
-    label:'Sales Acceptance', short:'Sales Accept',
-    failureLabel:'Low sales acceptance',
-    failureDesc:'Sales is rejecting a high proportion of MQLs, pointing to a quality or alignment gap between marketing output and sales readiness criteria.',
-    rootCauses:[
-      'MQL handoff lacks context — reps cannot see lead activity or intent signals',
-      'Speed to lead is too slow — MQLs go cold before first outreach attempt',
-      'Sales reps are cherry-picking and only working high-familiarity accounts',
-      'Routing logic sends leads to wrong rep (wrong territory, wrong segment)',
-      'No formal SLA for MQL follow-up speed or attempt cadence'
-    ],
-    questions:[
-      'What is the average time-to-first-touch after a lead reaches MQL status?',
-      'What are the top stated reasons sales reps disqualify an MQL?',
-      'Do reps have access to the full engagement history when a lead arrives?',
-      'Is there a documented SLA for MQL follow-up, and is it measured?',
-      'Which reps have the highest and lowest MQL acceptance rates?'
-    ],
-    actions:[
-      'Set and enforce a 4-hour SLA for first contact on all MQLs with weekly reporting',
-      'Build a lead context card in the CRM showing top 5 activities before handoff',
-      'Implement round-robin routing with segment-based logic to prevent cherry-picking',
-      'Create a bi-weekly MQL review with marketing and sales to align on quality trends',
-      'Track and report rep-level MQL acceptance rate as a core performance metric'
-    ],
-    impact:'Each accepted MQL that would otherwise be rejected is a potential pipeline opportunity recovered.'
-  },
-  {
-    id:'s_o', from:'sqls', to:'opps',
-    label:'Discovery Win Rate', short:'Discovery',
-    failureLabel:'Low discovery conversion',
-    failureDesc:'A high percentage of SQLs fail to convert to opportunities, meaning reps are losing deals at the discovery stage before they enter formal pipeline.',
-    rootCauses:[
-      'Discovery call agenda is unfocused — reps fail to uncover compelling events',
-      'Reps move to demo too quickly without establishing fit and urgency',
-      'No defined qualification framework (MEDDIC, SPIN, BANT) applied consistently',
-      'Competitive positioning is weak — prospects choose alternatives after first contact',
-      'Prospect personas do not match the actual economic buyer reached in discovery'
-    ],
-    questions:[
-      'Do all reps use a consistent discovery framework on every first call?',
-      'What is the most common reason a discovery call does not progress to an opportunity?',
-      'Are reps reaching the economic buyer or a technical evaluator in discovery?',
-      'How long is the average discovery-to-opportunity time when deals do convert?',
-      'What is the competitive win rate at the discovery stage?'
-    ],
-    actions:[
-      'Implement MEDDIC or equivalent framework and certify all reps within 30 days',
-      'Record and review 10 discovery calls per rep per quarter to identify coaching gaps',
-      'Add a mandatory "compelling event" field that must be populated to advance to opportunity',
-      'Build a one-page competitive battlecard for top 3 competitors for rep use in discovery',
-      'Require manager co-attendance on first calls for reps with <40% discovery-to-opp rate'
-    ],
-    impact:'Improving discovery conversion is one of the highest-leverage moves in the funnel — each saved deal compounds through the rest of the funnel.'
-  },
-  {
-    id:'o_w', from:'opps', to:'won',
-    label:'Close Rate', short:'Close',
-    failureLabel:'Low close rate',
-    failureDesc:'Opportunities are failing to close at benchmark rates, indicating weakness in late-stage selling, proposal quality, or deal process execution.',
-    rootCauses:[
-      'Multi-stakeholder deals lack a documented champion or champion enablement plan',
-      'Proposals are generic and not tied to the specific business case uncovered in discovery',
-      'No formal mutual action plan or close plan shared with the prospect',
-      'Deals stall in legal or procurement without rep intervention protocols',
-      'Discounting is reactive rather than structured, eroding urgency and trust'
-    ],
-    questions:[
-      'Do reps create a mutual close plan for every opportunity over a threshold size?',
-      'What is the average number of stakeholders involved in a won deal vs a lost deal?',
-      'What is the primary stated reason for losses in the last 2 quarters?',
-      'How often do deals slip from a committed close date, and by how many days?',
-      'Is there a structured executive sponsor program for strategic deals?'
-    ],
-    actions:[
-      'Require a mutual close plan for all opportunities above $25K ACV',
-      'Train reps on champion development — weekly check-ins, internal selling toolkit',
-      'Introduce a deal review process for all deals in final stage with cross-functional input',
-      'Create a proposal template that links product capabilities to prospect-specific outcomes',
-      'Implement a structured discount approval process tied to deal size and strategic value'
-    ],
-    impact:'Closing rate improvements translate directly to revenue — even small gains at this stage have outsized ARR impact.'
-  }
+  {id:'v_l',from:'visitors',to:'leads',label:'Capture Rate',short:'Capture',failureLabel:'Poor visitor capture',failureDesc:'Your site converts visitors to leads far below benchmark, meaning most demand evaporates before it enters the pipeline.',rootCauses:['CTA placement or messaging is misaligned with visitor intent','Landing pages lack specific value propositions for each persona','Form friction is too high — too many fields or gated content mismatch','Traffic sources are untargeted or bring low-intent visitors','No progressive profiling or exit-intent capture in place'],questions:['What is the primary CTA above the fold for your highest-traffic page?','Which traffic sources drive the highest lead conversion rate?','How many fields are on your primary lead capture form?','Are landing pages personalised by campaign or persona?','What percentage of visitors reach a lead-capture page at all?'],actions:['Run A/B tests on hero CTA copy and placement targeting top 3 intent signals','Reduce primary form to 3-4 fields; move enrichment to post-conversion','Create dedicated landing pages per high-volume campaign or ICP segment','Implement exit-intent overlays with content offers tied to page context','Audit traffic quality — pause or optimise channels with <1% lead rate'],impact:'Each 1pp improvement in capture rate adds significant lead volume with no increase in ad spend.'},
+  {id:'l_m',from:'leads',to:'mqls',label:'Lead Quality',short:'Lead Qual',failureLabel:'Low lead quality',failureDesc:'Less than the benchmark proportion of leads reach MQL status, indicating your captured leads are poorly qualified or scoring models are mis-calibrated.',rootCauses:['Lead scoring model weights signals that do not correlate with buyer intent','Content attracts top-of-funnel browsers rather than in-market buyers','ICP definition is too broad, allowing non-target companies to enter','No nurture sequence to qualify and progress marketing-captured leads','MQL definition is misaligned between marketing and sales teams'],questions:['What are the top 3 behavioural triggers that move a lead to MQL today?','What percentage of MQLs are rejected by sales within 48 hours?','When did you last audit the correlation between lead score and win rate?','Is there a documented MQL definition agreed upon by sales leadership?','Which content pieces generate the highest MQL-to-SQL conversion?'],actions:['Conduct a retrospective analysis of won deals to recalibrate lead scoring weights','Add firmographic filters (company size, industry) to disqualify non-ICP leads early','Build a 3-touch nurture sequence for newly captured leads before MQL evaluation','Run a joint marketing-sales workshop to align on MQL definition and handoff SLA','Gate high-intent content (ROI calculators, comparison guides) to improve captured quality'],impact:'Improving lead quality reduces wasted sales cycles and directly raises SQL and opportunity volume.'},
+  {id:'m_s',from:'mqls',to:'sqls',label:'Sales Acceptance',short:'Sales Accept',failureLabel:'Low sales acceptance',failureDesc:'Sales is rejecting a high proportion of MQLs, pointing to a quality or alignment gap between marketing output and sales readiness criteria.',rootCauses:['MQL handoff lacks context — reps cannot see lead activity or intent signals','Speed to lead is too slow — MQLs go cold before first outreach attempt','Sales reps are cherry-picking and only working high-familiarity accounts','Routing logic sends leads to wrong rep (wrong territory, wrong segment)','No formal SLA for MQL follow-up speed or attempt cadence'],questions:['What is the average time-to-first-touch after a lead reaches MQL status?','What are the top stated reasons sales reps disqualify an MQL?','Do reps have access to the full engagement history when a lead arrives?','Is there a documented SLA for MQL follow-up, and is it measured?','Which reps have the highest and lowest MQL acceptance rates?'],actions:['Set and enforce a 4-hour SLA for first contact on all MQLs with weekly reporting','Build a lead context card in the CRM showing top 5 activities before handoff','Implement round-robin routing with segment-based logic to prevent cherry-picking','Create a bi-weekly MQL review with marketing and sales to align on quality trends','Track and report rep-level MQL acceptance rate as a core performance metric'],impact:'Each accepted MQL that would otherwise be rejected is a potential pipeline opportunity recovered.'},
+  {id:'s_o',from:'sqls',to:'opps',label:'Discovery Win Rate',short:'Discovery',failureLabel:'Low discovery conversion',failureDesc:'A high percentage of SQLs fail to convert to opportunities, meaning reps are losing deals at the discovery stage before they enter formal pipeline.',rootCauses:['Discovery call agenda is unfocused — reps fail to uncover compelling events','Reps move to demo too quickly without establishing fit and urgency','No defined qualification framework (MEDDIC, SPIN, BANT) applied consistently','Competitive positioning is weak — prospects choose alternatives after first contact','Prospect personas do not match the actual economic buyer reached in discovery'],questions:['Do all reps use a consistent discovery framework on every first call?','What is the most common reason a discovery call does not progress to an opportunity?','Are reps reaching the economic buyer or a technical evaluator in discovery?','How long is the average discovery-to-opportunity time when deals do convert?','What is the competitive win rate at the discovery stage?'],actions:['Implement MEDDIC or equivalent framework and certify all reps within 30 days','Record and review 10 discovery calls per rep per quarter to identify coaching gaps','Add a mandatory "compelling event" field that must be populated to advance to opportunity','Build a one-page competitive battlecard for top 3 competitors for rep use in discovery','Require manager co-attendance on first calls for reps with <40% discovery-to-opp rate'],impact:'Improving discovery conversion is one of the highest-leverage moves in the funnel — each saved deal compounds through the rest of the funnel.'},
+  {id:'o_w',from:'opps',to:'won',label:'Close Rate',short:'Close',failureLabel:'Low close rate',failureDesc:'Opportunities are failing to close at benchmark rates, indicating weakness in late-stage selling, proposal quality, or deal process execution.',rootCauses:['Multi-stakeholder deals lack a documented champion or champion enablement plan','Proposals are generic and not tied to the specific business case uncovered in discovery','No formal mutual action plan or close plan shared with the prospect','Deals stall in legal or procurement without rep intervention protocols','Discounting is reactive rather than structured, eroding urgency and trust'],questions:['Do reps create a mutual close plan for every opportunity over a threshold size?','What is the average number of stakeholders involved in a won deal vs a lost deal?','What is the primary stated reason for losses in the last 2 quarters?','How often do deals slip from a committed close date, and by how many days?','Is there a structured executive sponsor program for strategic deals?'],actions:['Require a mutual close plan for all opportunities above $25K ACV','Train reps on champion development — weekly check-ins, internal selling toolkit','Introduce a deal review process for all deals in final stage with cross-functional input','Create a proposal template that links product capabilities to prospect-specific outcomes','Implement a structured discount approval process tied to deal size and strategic value'],impact:'Closing rate improvements translate directly to revenue — even small gains at this stage have outsized ARR impact.'}
 ];
 // ===== STATE =====
-function blankDraft(){
-  return {visitors:20000,leads:580,mqls:139,sqls:38,opps:11,won:3,asp:45000,spend:0,notes:""};
-}
-let state = {
-  currentQ: "Q1",
-  drafts: { Q1:blankDraft(), Q2:blankDraft(), Q3:blankDraft(), Q4:blankDraft() },
-  quarters: {},
-  tab: "funnel",
-  benchProfile: "midmarket",
-  compareKeys: [],
-  editingNotes: null
-};
+function blankDraft(){return {visitors:20000,leads:580,mqls:139,sqls:38,opps:11,won:3,asp:45000,spend:0,notes:""};}
+let state = {currentQ:"Q1",drafts:{Q1:blankDraft(),Q2:blankDraft(),Q3:blankDraft(),Q4:blankDraft()},quarters:{},tab:"funnel",benchProfile:"midmarket",compareKeys:[],editingNotes:null};
 // ===== PERSISTENCE =====
 const STORAGE_KEY = "pipeline_fitness_q26_v2";
-function saveState(){
-  try {
-    const toSave = {
-      drafts: state.drafts,
-      quarters: state.quarters,
-      currentQ: state.currentQ,
-      benchProfile: state.benchProfile,
-      compareKeys: state.compareKeys
-    };
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(toSave));
-  } catch(e){}
-}
-function loadState(){
-  try {
-    const raw = localStorage.getItem(STORAGE_KEY);
-    if(!raw) return;
-    const saved = JSON.parse(raw);
-    if(saved.drafts) state.drafts = Object.assign({Q1:blankDraft(),Q2:blankDraft(),Q3:blankDraft(),Q4:blankDraft()}, saved.drafts);
-    if(saved.quarters) state.quarters = saved.quarters;
-    if(saved.currentQ) state.currentQ = saved.currentQ;
-    if(saved.benchProfile) state.benchProfile = saved.benchProfile;
-    if(saved.compareKeys) state.compareKeys = saved.compareKeys;
-  } catch(e){}
-}
+function saveState(){try{const toSave={drafts:state.drafts,quarters:state.quarters,currentQ:state.currentQ,benchProfile:state.benchProfile,compareKeys:state.compareKeys};localStorage.setItem(STORAGE_KEY,JSON.stringify(toSave));}catch(e){}}
+function loadState(){try{const raw=localStorage.getItem(STORAGE_KEY);if(!raw)return;const saved=JSON.parse(raw);if(saved.drafts)state.drafts=Object.assign({Q1:blankDraft(),Q2:blankDraft(),Q3:blankDraft(),Q4:blankDraft()},saved.drafts);if(saved.quarters)state.quarters=saved.quarters;if(saved.currentQ)state.currentQ=saved.currentQ;if(saved.benchProfile)state.benchProfile=saved.benchProfile;if(saved.compareKeys)state.compareKeys=saved.compareKeys;}catch(e){}}
 // ===== BENCHMARK HELPERS =====
-function getBench(convId){
-  return BENCH_PROFILES[state.benchProfile][convId];
-}
-function rateStatus(rate, bench){
-  if(rate >= bench.high) return "good";
-  if(rate >= bench.mid)  return "ok";
-  if(rate >= bench.low)  return "low";
-  return "bad";
-}
-function statusLabel(s){
-  if(s==="good") return "Above benchmark";
-  if(s==="ok")   return "At benchmark";
-  if(s==="low")  return "Below benchmark";
-  return "Well below benchmark";
-}
+function getBench(convId){return BENCH_PROFILES[state.benchProfile][convId];}
+function rateStatus(rate,bench){if(rate>=bench.high)return "good";if(rate>=bench.mid)return "ok";if(rate>=bench.low)return "low";return "bad";}
+function statusLabel(s){if(s==="good")return "Above benchmark";if(s==="ok")return "At benchmark";if(s==="low")return "Below benchmark";return "Well below benchmark";}
 // ===== COMPUTE CONVERSIONS =====
-function computeConvsFrom(d){
-  const pairs = [
-    {id:"v_l", num:d.leads,   den:d.visitors},
-    {id:"l_m", num:d.mqls,    den:d.leads},
-    {id:"m_s", num:d.sqls,    den:d.mqls},
-    {id:"s_o", num:d.opps,    den:d.sqls},
-    {id:"o_w", num:d.won,     den:d.opps}
-  ];
-  return pairs.map(p => {
-    const conv = CONVS.find(c => c.id === p.id);
-    const bench = getBench(p.id);
-    const rate = p.den > 0 ? (p.num / p.den) * 100 : 0;
-    const status = rateStatus(rate, bench);
-    const deficit = Math.max(0, bench.mid - rate);
-    return { ...conv, rate, bench, status, deficit };
-  });
-}
-function computeConvs(){
-  return computeConvsFrom(state.drafts[state.currentQ]);
-}
-// ===== DETECT PRIMARY ISSUE =====
-function detectPrimary(convs){
-  return convs.reduce((a,b) => b.deficit > a.deficit ? b : a, convs[0]);
-}
-// ===== HEALTH SCORE =====
-function healthScore(convs){
-  const weights = {v_l:20,l_m:20,m_s:20,s_o:20,o_w:20};
-  let score = 0;
-  convs.forEach(c => {
-    const w = weights[c.id];
-    if(c.status==="good")      score += w;
-    else if(c.status==="ok")   score += w * 0.75;
-    else if(c.status==="low")  score += w * 0.40;
-    else                       score += 0;
-  });
-  return Math.round(score);
-}
-// ===== ALL WHAT-IFS =====
-function allWhatIfs(convs){
-  const d = state.drafts[state.currentQ];
-  const results = [];
-  convs.forEach(c => {
-    if(c.deficit <= 0) return;
-    const benchMid = c.bench.mid / 100;
-    let projWon = d.won;
-    if(c.id === 'v_l'){
-      const projLeads = d.visitors * benchMid;
-      const lm = d.leads > 0 ? d.mqls/d.leads : 0;
-      const ms = d.mqls > 0 ? d.sqls/d.mqls : 0;
-      const so = d.sqls > 0 ? d.opps/d.sqls : 0;
-      const ow = d.opps > 0 ? d.won/d.opps : 0;
-      projWon = projLeads * lm * ms * so * ow;
-    } else if(c.id === 'l_m'){
-      const projMqls = d.leads * benchMid;
-      const ms = d.mqls > 0 ? d.sqls/d.mqls : 0;
-      const so = d.sqls > 0 ? d.opps/d.sqls : 0;
-      const ow = d.opps > 0 ? d.won/d.opps : 0;
-      projWon = projMqls * ms * so * ow;
-    } else if(c.id === 'm_s'){
-      const projSqls = d.mqls * benchMid;
-      const so = d.sqls > 0 ? d.opps/d.sqls : 0;
-      const ow = d.opps > 0 ? d.won/d.opps : 0;
-      projWon = projSqls * so * ow;
-    } else if(c.id === 's_o'){
-      const projOpps = d.sqls * benchMid;
-      const ow = d.opps > 0 ? d.won/d.opps : 0;
-      projWon = projOpps * ow;
-    } else if(c.id === 'o_w'){
-      projWon = d.opps * benchMid;
-    }
-    const uplift = projWon - d.won;
-    const addedRev = uplift * d.asp;
-    results.push({
-      id: c.id, label: c.label, short: c.short,
-      currentRate: c.rate, benchMidRate: c.bench.mid,
-      projectedWon: projWon, uplift, addedRev
-    });
-  });
-  results.sort((a,b) => b.uplift - a.uplift);
-  return results;
-}
-// ===== EFFICIENCY METRICS =====
-function effMetrics(d){
-  if(!d.spend || d.spend <= 0) return null;
-  const cpl     = d.leads  > 0 ? d.spend / d.leads  : null;
-  const cpMql   = d.mqls   > 0 ? d.spend / d.mqls   : null;
-  const cac     = d.won    > 0 ? d.spend / d.won     : null;
-  const pipeROI = d.spend  > 0 && d.opps > 0 ? (d.opps * d.asp) / d.spend : null;
-  const revROI  = d.spend  > 0 && d.won  > 0 ? (d.won  * d.asp) / d.spend : null;
-  return {cpl, cpMql, cac, pipeROI, revROI};
-}
-// ===== SUBMIT SNAPSHOT =====
-function submitSnapshot(){
-  const d = state.drafts[state.currentQ];
-  const convs = computeConvs();
-  const primary = detectPrimary(convs);
-  const hs = healthScore(convs);
-  const rates = {};
-  const statuses = {};
-  convs.forEach(c => { rates[c.id] = c.rate; statuses[c.id] = c.status; });
-  state.quarters[state.currentQ] = {
-    key: state.currentQ,
-    data: { ...d },
-    rates, statuses,
-    healthScore: hs,
-    primaryId: primary.id,
-    primaryLabel: primary.label,
-    revenue: d.won * d.asp,
-    notes: d.notes,
-    submittedAt: new Date().toISOString()
-  };
-  saveState();
-  state.tab = "trends";
-  render();
-}
-// ===== FORMAT HELPERS =====
-function fmtN(n){ if(n===null||n===undefined) return "--"; return Number(n).toLocaleString(); }
-function fmtRate(r){ if(r===null||r===undefined) return "--"; return r.toFixed(1)+"%"; }
-function fmtDollar(n){ if(n===null||n===undefined) return "--"; if(n>=1000000) return "$"+(n/1000000).toFixed(1)+"M"; if(n>=1000) return "$"+(n/1000).toFixed(0)+"K"; return "$"+Math.round(n); }
-function fmtROI(n){ if(n===null||n===undefined) return "--"; return n.toFixed(1)+"x"; }
-function truncate(s, len){ if(!s) return ""; return s.length > len ? s.substring(0,len)+"..." : s; }
-function scoreColor(s){ if(s>=70) return B.green; if(s>=45) return B.amber; return B.red; }
-function scoreClass(s){ if(s>=70) return "score-good"; if(s>=45) return "score-ok"; return "score-bad"; }
-function pillClass(status){ if(status==="good") return "pill-good"; if(status==="ok") return "pill-ok"; return "pill-bad"; }
-function issueClass(status){ if(status==="good"||status==="ok") return "teal"; if(status==="low") return "amber"; return "red"; }
-// ===== DELTA HELPER =====
-function deltaHtml(vNew, vOld, type){
-  if(vNew===null||vNew===undefined||vOld===null||vOld===undefined) return '<span class="delta-zero cmp-delta">\u2014</span>';
-  const diff = vNew - vOld;
-  if(Math.abs(diff) < 0.001) return '<span class="delta-zero cmp-delta">\u2014</span>';
-  const up = diff > 0;
-  const cls = up ? "delta-up" : "delta-down";
-  const arrow = up ? "\u2191" : "\u2193";
-  let formatted;
-  if(type==="pct") formatted = arrow+" "+Math.abs(diff).toFixed(1)+"pp";
-  else if(type==="dollar") formatted = arrow+" "+fmtDollar(Math.abs(diff));
-  else formatted = arrow+" "+fmtN(Math.abs(diff));
-  return '<span class="'+cls+' cmp-delta">'+formatted+'</span>';
-}
-// ===== MINI BAR CHART =====
-function miniBarChart(values, benchPct, max){
-  const W=80, H=28, barW=14, gap=4;
-  const colors = [B.green, B.amber, B.gold, B.red];
-  const totalBars = values.length;
-  const startX = (W - totalBars*(barW+gap) + gap) / 2;
-  let bars = "";
-  values.forEach((v,i) => {
-    if(v === null || v === undefined){
-      bars += '<rect x="'+(startX+i*(barW+gap))+'" y="'+(H-4)+'" width="'+barW+'" height="4" fill="'+B.fog+'" rx="0"/>';
-      return;
-    }
-    const normMax = max || Math.max(...values.filter(x=>x!==null)) || 1;
-    const barH = Math.max(3, Math.round((v/normMax)*(H-2)));
-    const color = colors[i % colors.length];
-    bars += '<rect x="'+(startX+i*(barW+gap))+'" y="'+(H-barH)+'" width="'+barW+'" height="'+barH+'" fill="'+color+'" rx="0"/>';
-  });
-  let benchLine = "";
-  if(benchPct !== null && benchPct !== undefined && max){
-    const benchY = H - Math.round((benchPct/100)*H);
-    const safeY = Math.max(1, Math.min(H-1, benchY));
-    benchLine = '<line x1="0" y1="'+safeY+'" x2="'+W+'" y2="'+safeY+'" stroke="'+B.fog+'" stroke-width="1" stroke-dasharray="3,2"/>';
-  }
-  return '<svg width="'+W+'" height="'+H+'" class="mini-chart">'+benchLine+bars+'</svg>';
-}
-// ===== PRINT REPORT =====
-function printReport(qKey){
-  const snap = qKey ? state.quarters[qKey] : null;
-  const d = snap ? snap.data : state.drafts[state.currentQ];
-  const label = qKey || state.currentQ;
-  const convs = snap ? computeConvsFrom(snap.data) : computeConvs();
-  const hs = snap ? snap.healthScore : healthScore(convs);
-  const primary = snap ? CONVS.find(c=>c.id===snap.primaryId) : detectPrimary(convs);
-  const eff = effMetrics(d);
-  const notes = snap ? snap.notes : d.notes;
-  const benchRows = convs.map(c => {
-    const cls = c.status==="good"?"color:#1D9E75":c.status==="ok"?"color:#E8933A":"color:#D85A30";
-    return '<tr><td>'+c.label+'</td><td style="font-family:monospace;'+cls+';font-weight:700">'+fmtRate(c.rate)+'</td><td style="font-family:monospace;color:#6B6B5E">'+c.bench.low+'\u2013'+c.bench.high+'%</td><td style="'+cls+';font-weight:700">'+(c.status==="good"?"Good":c.status==="ok"?"OK":c.status==="low"?"Low":"Critical")+'</td></tr>';
-  }).join("");
-  const effHtml = eff ? '<h3 style="font-size:13px;color:#C9A84C;margin:20px 0 10px">Efficiency Metrics</h3><table style="width:100%;border-collapse:collapse;font-size:13px"><tr><td style="padding:4px 8px;border-bottom:1px solid #2A2A22">Cost per Lead</td><td style="font-family:monospace;font-weight:700;text-align:right">'+fmtDollar(eff.cpl)+'</td></tr><tr><td style="padding:4px 8px;border-bottom:1px solid #2A2A22">Cost per MQL</td><td style="font-family:monospace;font-weight:700;text-align:right">'+fmtDollar(eff.cpMql)+'</td></tr><tr><td style="padding:4px 8px;border-bottom:1px solid #2A2A22">CAC</td><td style="font-family:monospace;font-weight:700;text-align:right">'+fmtDollar(eff.cac)+'</td></tr><tr><td style="padding:4px 8px;border-bottom:1px solid #2A2A22">Pipeline ROI</td><td style="font-family:monospace;font-weight:700;text-align:right">'+fmtROI(eff.pipeROI)+'</td></tr><tr><td style="padding:4px 8px">Revenue ROI</td><td style="font-family:monospace;font-weight:700;text-align:right">'+fmtROI(eff.revROI)+'</td></tr></table>' : "";
-  const notesHtml = notes ? '<h3 style="font-size:13px;color:#C9A84C;margin:20px 0 10px">Quarter Notes</h3><p style="font-size:13px;color:#F5F0E8;line-height:1.6;background:#1E1E18;padding:12px;font-family:Source Serif 4,serif;font-style:italic">'+notes+'</p>' : "";
-  const html = '<!DOCTYPE html><html><head><meta charset="UTF-8"><title>Pipeline Fitness \u2014 '+label+'</title><style>body{font-family:Space Mono,monospace;max-width:720px;margin:40px auto;padding:20px;color:#F5F0E8;background:#141410}h1{font-size:22px;margin-bottom:4px;font-family:Playfair Display,serif}h2{font-size:16px;margin:20px 0 10px;font-family:Playfair Display,serif;color:#C9A84C}h3{font-size:13px;margin:16px 0 8px;color:#6B6B5E;text-transform:uppercase;letter-spacing:.05em}table{width:100%;border-collapse:collapse;font-size:13px;margin-bottom:16px}th{text-align:left;padding:6px 8px;border-bottom:1px solid #2A2A22;font-size:11px;text-transform:uppercase;letter-spacing:.05em;color:#C9A84C}td{padding:6px 8px;border-bottom:1px solid rgba(245,240,232,0.07);color:#F5F0E8}.score{font-size:48px;font-weight:700;font-family:Space Mono,monospace;margin:12px 0}.footer{margin-top:40px;padding-top:16px;border-top:1px solid rgba(201,168,76,0.3);font-size:11px;color:#6B6B5E;text-align:center}@media print{body{margin:20px;background:#fff;color:#111}td{color:#111}th{color:#333}}</style></head><body><div style="display:flex;align-items:center;gap:16px;margin-bottom:24px;padding-bottom:16px;border-bottom:1px solid rgba(201,168,76,0.3)"><div><h1 style="color:#F5F0E8">Pipeline <em style="color:#C9A84C;font-style:italic">Fitness</em></h1><div style="font-size:13px;color:#6B6B5E">'+label+' \u00B7 Benchmark: '+(state.benchProfile==="midmarket"?"Mid-Market":state.benchProfile==="smb"?"SMB":"Enterprise")+' \u00B7 Printed '+new Date().toLocaleDateString()+'</div></div></div><h2>Health Score</h2><div class="score" style="color:'+scoreColor(hs)+'">'+hs+'<span style="font-size:20px;color:#6B6B5E">/100</span></div><p style="font-size:14px;color:#F5F0E8;font-family:Source Serif 4,serif">Primary issue: <strong>'+(primary ? primary.label : "None")+'</strong> \u2014 '+(primary ? primary.failureDesc : "")+'</p><h2>Conversion Rates vs Benchmark</h2><table><thead><tr><th>Stage</th><th>Your Rate</th><th>Benchmark Range</th><th>Status</th></tr></thead><tbody>'+benchRows+'</tbody></table><h2>Volume Metrics</h2><table><thead><tr><th>Metric</th><th>Value</th></tr></thead><tbody><tr><td>Visitors</td><td style="font-family:monospace;font-weight:700;text-align:right">'+fmtN(d.visitors)+'</td></tr><tr><td>Leads</td><td style="font-family:monospace;font-weight:700;text-align:right">'+fmtN(d.leads)+'</td></tr><tr><td>MQLs</td><td style="font-family:monospace;font-weight:700;text-align:right">'+fmtN(d.mqls)+'</td></tr><tr><td>SQLs</td><td style="font-family:monospace;font-weight:700;text-align:right">'+fmtN(d.sqls)+'</td></tr><tr><td>Opportunities</td><td style="font-family:monospace;font-weight:700;text-align:right">'+fmtN(d.opps)+'</td></tr><tr><td>Won</td><td style="font-family:monospace;font-weight:700;text-align:right">'+fmtN(d.won)+'</td></tr><tr><td>ASP</td><td style="font-family:monospace;font-weight:700;text-align:right">'+fmtDollar(d.asp)+'</td></tr><tr><td>Revenue</td><td style="font-family:monospace;font-weight:700;text-align:right">'+fmtDollar(d.won * d.asp)+'</td></tr></tbody></table>'+effHtml+notesHtml+'<div class="footer">Pipeline Fitness Dashboard \u2014 built by punsandrosess</div><div class="footer" style="margin-top:8px;color:#F5F0E8">This framework is powered by Sam Kuehnle\u2019s excellent post titled \u201c<a href="https://www.samkuehnle.com/p/ive-audited-100-funnels-heres-what-i-found" style="color:#F5F0E8;text-decoration:underline">I\u2019ve audited 100+ funnels. Here\u2019s what I found.</a>\u201d</div></body></html>';
-  const newWin = window.open('', '_blank');
-  if(!newWin){ alert("Pop-ups blocked. Please allow pop-ups for this page."); return; }
-  newWin.document.write(html);
-  newWin.document.close();
-  newWin.focus();
-  setTimeout(() => newWin.print(), 300);
-}
+function computeConvsFrom(d){const pairs=[{id:"v_l",num:d.leads,den:d.visitors},{id:"l_m",num:d.mqls,den:d.leads},{id:"m_s",num:d.sqls,den:d.mqls},{id:"s_o",num:d.opps,den:d.sqls},{id:"o_w",num:d.won,den:d.opps}];return pairs.map(p=>{const conv=CONVS.find(c=>c.id===p.id);const bench=getBench(p.id);const rate=p.den>0?(p.num/p.den)*100:0;const status=rateStatus(rate,bench);const deficit=Math.max(0,bench.mid-rate);return{...conv,rate,bench,status,deficit};});}
+function computeConvs(){return computeConvsFrom(state.drafts[state.currentQ]);}
+function detectPrimary(convs){return convs.reduce((a,b)=>b.deficit>a.deficit?b:a,convs[0]);}
+function healthScore(convs){const weights={v_l:20,l_m:20,m_s:20,s_o:20,o_w:20};let score=0;convs.forEach(c=>{const w=weights[c.id];if(c.status==="good")score+=w;else if(c.status==="ok")score+=w*0.75;else if(c.status==="low")score+=w*0.40;else score+=0;});return Math.round(score);}
+function allWhatIfs(convs){const d=state.drafts[state.currentQ];const results=[];convs.forEach(c=>{if(c.deficit<=0)return;const benchMid=c.bench.mid/100;let projWon=d.won;if(c.id==='v_l'){const projLeads=d.visitors*benchMid;const lm=d.leads>0?d.mqls/d.leads:0;const ms=d.mqls>0?d.sqls/d.mqls:0;const so=d.sqls>0?d.opps/d.sqls:0;const ow=d.opps>0?d.won/d.opps:0;projWon=projLeads*lm*ms*so*ow;}else if(c.id==='l_m'){const projMqls=d.leads*benchMid;const ms=d.mqls>0?d.sqls/d.mqls:0;const so=d.sqls>0?d.opps/d.sqls:0;const ow=d.opps>0?d.won/d.opps:0;projWon=projMqls*ms*so*ow;}else if(c.id==='m_s'){const projSqls=d.mqls*benchMid;const so=d.sqls>0?d.opps/d.sqls:0;const ow=d.opps>0?d.won/d.opps:0;projWon=projSqls*so*ow;}else if(c.id==='s_o'){const projOpps=d.sqls*benchMid;const ow=d.opps>0?d.won/d.opps:0;projWon=projOpps*ow;}else if(c.id==='o_w'){projWon=d.opps*benchMid;}const uplift=projWon-d.won;const addedRev=uplift*d.asp;results.push({id:c.id,label:c.label,short:c.short,currentRate:c.rate,benchMidRate:c.bench.mid,projectedWon:projWon,uplift,addedRev});});results.sort((a,b)=>b.uplift-a.uplift);return results;}
+function effMetrics(d){if(!d.spend||d.spend<=0)return null;const cpl=d.leads>0?d.spend/d.leads:null;const cpMql=d.mqls>0?d.spend/d.mqls:null;const cac=d.won>0?d.spend/d.won:null;const pipeROI=d.spend>0&&d.opps>0?(d.opps*d.asp)/d.spend:null;const revROI=d.spend>0&&d.won>0?(d.won*d.asp)/d.spend:null;return{cpl,cpMql,cac,pipeROI,revROI};}
+function submitSnapshot(){const d=state.drafts[state.currentQ];const convs=computeConvs();const primary=detectPrimary(convs);const hs=healthScore(convs);const rates={};const statuses={};convs.forEach(c=>{rates[c.id]=c.rate;statuses[c.id]=c.status;});state.quarters[state.currentQ]={key:state.currentQ,data:{...d},rates,statuses,healthScore:hs,primaryId:primary.id,primaryLabel:primary.label,revenue:d.won*d.asp,notes:d.notes,submittedAt:new Date().toISOString()};saveState();state.tab="trends";render();}
+function fmtN(n){if(n===null||n===undefined)return "--";return Number(n).toLocaleString();}
+function fmtRate(r){if(r===null||r===undefined)return "--";return r.toFixed(1)+"%";}
+function fmtDollar(n){if(n===null||n===undefined)return "--";if(n>=1000000)return "$"+(n/1000000).toFixed(1)+"M";if(n>=1000)return "$"+(n/1000).toFixed(0)+"K";return "$"+Math.round(n);}
+function fmtROI(n){if(n===null||n===undefined)return "--";return n.toFixed(1)+"x";}
+function truncate(s,len){if(!s)return "";return s.length>len?s.substring(0,len)+"...":s;}
+function scoreColor(s){if(s>=70)return B.green;if(s>=45)return B.amber;return B.red;}
+function scoreClass(s){if(s>=70)return "score-good";if(s>=45)return "score-ok";return "score-bad";}
+function pillClass(status){if(status==="good")return "pill-good";if(status==="ok")return "pill-ok";return "pill-bad";}
+function issueClass(status){if(status==="good"||status==="ok")return "teal";if(status==="low")return "amber";return "red";}
+function deltaHtml(vNew,vOld,type){if(vNew===null||vNew===undefined||vOld===null||vOld===undefined)return '<span class="delta-zero cmp-delta">\u2014</span>';const diff=vNew-vOld;if(Math.abs(diff)<0.001)return '<span class="delta-zero cmp-delta">\u2014</span>';const up=diff>0;const cls=up?"delta-up":"delta-down";const arrow=up?"\u2191":"\u2193";let formatted;if(type==="pct")formatted=arrow+" "+Math.abs(diff).toFixed(1)+"pp";else if(type==="dollar")formatted=arrow+" "+fmtDollar(Math.abs(diff));else formatted=arrow+" "+fmtN(Math.abs(diff));return '<span class="'+cls+' cmp-delta">'+formatted+'</span>';}
+function miniBarChart(values,benchPct,max){const W=80,H=28,barW=14,gap=4;const colors=[B.green,B.amber,B.gold,B.red];const totalBars=values.length;const startX=(W-totalBars*(barW+gap)+gap)/2;let bars="";values.forEach((v,i)=>{if(v===null||v===undefined){bars+='<rect x="'+(startX+i*(barW+gap))+'" y="'+(H-4)+'" width="'+barW+'" height="4" fill="'+B.fog+'" rx="0"/>';return;}const normMax=max||Math.max(...values.filter(x=>x!==null))||1;const barH=Math.max(3,Math.round((v/normMax)*(H-2)));const color=colors[i%colors.length];bars+='<rect x="'+(startX+i*(barW+gap))+'" y="'+(H-barH)+'" width="'+barW+'" height="'+barH+'" fill="'+color+'" rx="0"/>';});let benchLine="";if(benchPct!==null&&benchPct!==undefined&&max){const benchY=H-Math.round((benchPct/100)*H);const safeY=Math.max(1,Math.min(H-1,benchY));benchLine='<line x1="0" y1="'+safeY+'" x2="'+W+'" y2="'+safeY+'" stroke="'+B.fog+'" stroke-width="1" stroke-dasharray="3,2"/>';}return '<svg width="'+W+'" height="'+H+'" class="mini-chart">'+benchLine+bars+'</svg>';}
+function printReport(qKey){const snap=qKey?state.quarters[qKey]:null;const d=snap?snap.data:state.drafts[state.currentQ];const label=qKey||state.currentQ;const convs=snap?computeConvsFrom(snap.data):computeConvs();const hs=snap?snap.healthScore:healthScore(convs);const primary=snap?CONVS.find(c=>c.id===snap.primaryId):detectPrimary(convs);const eff=effMetrics(d);const notes=snap?snap.notes:d.notes;const benchRows=convs.map(c=>{const cls=c.status==="good"?"color:#1D9E75":c.status==="ok"?"color:#E8933A":"color:#D85A30";return '<tr><td>'+c.label+'</td><td style="font-family:monospace;'+cls+';font-weight:700">'+fmtRate(c.rate)+'</td><td style="font-family:monospace;color:#6B6B5E">'+c.bench.low+'\u2013'+c.bench.high+'%</td><td style="'+cls+';font-weight:700">'+(c.status==="good"?"Good":c.status==="ok"?"OK":c.status==="low"?"Low":"Critical")+'</td></tr>';}).join("");const effHtml=eff?'<h3 style="font-size:13px;color:#C9A84C;margin:20px 0 10px">Efficiency Metrics</h3><table style="width:100%;border-collapse:collapse;font-size:13px"><tr><td style="padding:4px 8px;border-bottom:1px solid #2A2A22">Cost per Lead</td><td style="font-family:monospace;font-weight:700;text-align:right">'+fmtDollar(eff.cpl)+'</td></tr><tr><td style="padding:4px 8px;border-bottom:1px solid #2A2A22">Cost per MQL</td><td style="font-family:monospace;font-weight:700;text-align:right">'+fmtDollar(eff.cpMql)+'</td></tr><tr><td style="padding:4px 8px;border-bottom:1px solid #2A2A22">CAC</td><td style="font-family:monospace;font-weight:700;text-align:right">'+fmtDollar(eff.cac)+'</td></tr><tr><td style="padding:4px 8px;border-bottom:1px solid #2A2A22">Pipeline ROI</td><td style="font-family:monospace;font-weight:700;text-align:right">'+fmtROI(eff.pipeROI)+'</td></tr><tr><td style="padding:4px 8px">Revenue ROI</td><td style="font-family:monospace;font-weight:700;text-align:right">'+fmtROI(eff.revROI)+'</td></tr></table>':"";const notesHtml=notes?'<h3 style="font-size:13px;color:#C9A84C;margin:20px 0 10px">Quarter Notes</h3><p style="font-size:13px;color:#F5F0E8;line-height:1.6;background:#1E1E18;padding:12px;font-family:Source Serif 4,serif;font-style:italic">'+notes+'</p>':"";const html='<!DOCTYPE html><html><head><meta charset="UTF-8"><title>Pipeline Fitness \u2014 '+label+'</title><style>body{font-family:Space Mono,monospace;max-width:720px;margin:40px auto;padding:20px;color:#F5F0E8;background:#141410}h1{font-size:22px;margin-bottom:4px;font-family:Playfair Display,serif}h2{font-size:16px;margin:20px 0 10px;font-family:Playfair Display,serif;color:#C9A84C}h3{font-size:13px;margin:16px 0 8px;color:#6B6B5E;text-transform:uppercase;letter-spacing:.05em}table{width:100%;border-collapse:collapse;font-size:13px;margin-bottom:16px}th{text-align:left;padding:6px 8px;border-bottom:1px solid #2A2A22;font-size:11px;text-transform:uppercase;letter-spacing:.05em;color:#C9A84C}td{padding:6px 8px;border-bottom:1px solid rgba(245,240,232,0.07);color:#F5F0E8}.score{font-size:48px;font-weight:700;font-family:Space Mono,monospace;margin:12px 0}.footer{margin-top:40px;padding-top:16px;border-top:1px solid rgba(201,168,76,0.3);font-size:11px;color:#6B6B5E;text-align:center}@media print{body{margin:20px;background:#fff;color:#111}td{color:#111}th{color:#333}}</style></head><body><div style="display:flex;align-items:center;gap:16px;margin-bottom:24px;padding-bottom:16px;border-bottom:1px solid rgba(201,168,76,0.3)"><div><h1 style="color:#F5F0E8">Pipeline <em style="color:#C9A84C;font-style:italic">Fitness</em></h1><div style="font-size:13px;color:#6B6B5E">'+label+' \u00B7 Benchmark: '+(state.benchProfile==="midmarket"?"Mid-Market":state.benchProfile==="smb"?"SMB":"Enterprise")+' \u00B7 Printed '+new Date().toLocaleDateString()+'</div></div></div><h2>Health Score</h2><div class="score" style="color:'+scoreColor(hs)+'">'+hs+'<span style="font-size:20px;color:#6B6B5E">/100</span></div><p style="font-size:14px;color:#F5F0E8;font-family:Source Serif 4,serif">Primary issue: <strong>'+(primary?primary.label:"None")+'</strong> \u2014 '+(primary?primary.failureDesc:"")+'</p><h2>Conversion Rates vs Benchmark</h2><table><thead><tr><th>Stage</th><th>Your Rate</th><th>Benchmark Range</th><th>Status</th></tr></thead><tbody>'+benchRows+'</tbody></table><h2>Volume Metrics</h2><table><thead><tr><th>Metric</th><th>Value</th></tr></thead><tbody><tr><td>Visitors</td><td style="font-family:monospace;font-weight:700;text-align:right">'+fmtN(d.visitors)+'</td></tr><tr><td>Leads</td><td style="font-family:monospace;font-weight:700;text-align:right">'+fmtN(d.leads)+'</td></tr><tr><td>MQLs</td><td style="font-family:monospace;font-weight:700;text-align:right">'+fmtN(d.mqls)+'</td></tr><tr><td>SQLs</td><td style="font-family:monospace;font-weight:700;text-align:right">'+fmtN(d.sqls)+'</td></tr><tr><td>Opportunities</td><td style="font-family:monospace;font-weight:700;text-align:right">'+fmtN(d.opps)+'</td></tr><tr><td>Won</td><td style="font-family:monospace;font-weight:700;text-align:right">'+fmtN(d.won)+'</td></tr><tr><td>ASP</td><td style="font-family:monospace;font-weight:700;text-align:right">'+fmtDollar(d.asp)+'</td></tr><tr><td>Revenue</td><td style="font-family:monospace;font-weight:700;text-align:right">'+fmtDollar(d.won*d.asp)+'</td></tr></tbody></table>'+effHtml+notesHtml+'<div class="footer">Pipeline Fitness \u2014 built by punsandrosess</div><div class="footer" style="margin-top:8px;color:#F5F0E8">This framework is powered by Sam Kuehnle\u2019s excellent post titled \u201c<a href="https://www.samkuehnle.com/p/ive-audited-100-funnels-heres-what-i-found" style="color:#F5F0E8;text-decoration:underline">I\u2019ve audited 100+ funnels. Here\u2019s what I found.</a>\u201d</div></body></html>';const newWin=window.open('','_blank');if(!newWin){alert("Pop-ups blocked. Please allow pop-ups for this page.");return;}newWin.document.write(html);newWin.document.close();newWin.focus();setTimeout(()=>newWin.print(),300);}
 // ===== RENDER FUNNEL TAB =====
-function renderFunnel(){
-  const d = state.drafts[state.currentQ];
-  const convs = computeConvs();
-  const primary = detectPrimary(convs);
-  const hs = healthScore(convs);
-  const eff = effMetrics(d);
-  const whatifs = allWhatIfs(convs);
-  const rev = d.won * d.asp;
-  const metricStrip = '<div class="metric-strip"><div class="metric-tile"><div class="label">Health Score</div><div class="value '+scoreClass(hs)+'">'+hs+'</div><div class="sub">out of 100</div></div><div class="metric-tile"><div class="label">Revenue</div><div class="value">'+fmtDollar(rev)+'</div><div class="sub">'+fmtN(d.won)+' won \u00D7 '+fmtDollar(d.asp)+' ASP</div></div><div class="metric-tile"><div class="label">Pipeline</div><div class="value">'+fmtDollar(d.opps * d.asp)+'</div><div class="sub">'+fmtN(d.opps)+' open opps</div></div><div class="metric-tile"><div class="label">Leads</div><div class="value">'+fmtN(d.leads)+'</div><div class="sub">from '+fmtN(d.visitors)+' visitors</div></div></div>';
-  let effPanel = "";
-  if(eff){
-    effPanel = '<div class="eff-panel"><div class="eff-title">Marketing Spend Efficiency \u2014 '+fmtDollar(d.spend)+' invested</div><div class="eff-grid"><div class="eff-item"><div class="e-label">Cost per Lead</div><div class="e-value">'+fmtDollar(eff.cpl)+'</div></div><div class="eff-item"><div class="e-label">Cost per MQL</div><div class="e-value">'+fmtDollar(eff.cpMql)+'</div></div><div class="eff-item"><div class="e-label">CAC</div><div class="e-value">'+fmtDollar(eff.cac)+'</div></div><div class="eff-item"><div class="e-label">Pipeline ROI</div><div class="e-value">'+fmtROI(eff.pipeROI)+'</div></div><div class="eff-item"><div class="e-label">Revenue ROI</div><div class="e-value">'+fmtROI(eff.revROI)+'</div></div></div></div>';
-  }
-  const issC = primary.deficit > 0 ? (primary.status==="bad"?"red":primary.status==="low"?"amber":"teal") : "teal";
-  const issIcon = issC==="red"?"\u26A0":issC==="amber"?"\u25CF":"\u2713";
-  const issueBanner = '<div class="issue-banner '+issC+'"><div class="issue-icon">'+issIcon+'</div><div><div class="issue-title">'+(primary.deficit > 0 ? "Primary issue: "+primary.failureLabel : "Pipeline performing at or above benchmark")+'</div><div class="issue-desc">'+(primary.deficit > 0 ? primary.failureDesc : "All stages are tracking well against benchmark. Keep monitoring for regression.")+'</div></div></div>';
-  const stages = ['visitors','leads','mqls','sqls','opps','won'];
-  const maxVol = d.visitors || 1;
-  const funnelBars = stages.map(s => {
-    const val = d[s];
-    const pct = Math.max(2, Math.round((val/maxVol)*100));
-    const colors = {visitors:B.gold,leads:B.green,mqls:B.amber,sqls:B.gold,opps:B.red,won:B.fog};
-    const labels = {visitors:"Visitors",leads:"Leads",mqls:"MQLs",sqls:"SQLs",opps:"Opps",won:"Won"};
-    return '<div class="funnel-stage"><div class="funnel-label">'+labels[s]+'</div><div class="funnel-bar-wrap"><div class="funnel-bar" style="width:'+pct+'%;background:'+colors[s]+'"></div></div><div class="funnel-count">'+fmtN(val)+'</div></div>';
-  }).join("");
-  const convRows = convs.map(c => {
-    const status = c.status;
-    const pClass = pillClass(status);
-    const statusText = status==="good"?"\u2191 Good":status==="ok"?"\u2192 OK":status==="low"?"\u2193 Low":"\u2193\u2193 Critical";
-    return '<tr><td style="font-weight:700;font-family:Playfair Display,serif">'+c.label+'</td><td><span class="rate-pill '+pClass+'">'+fmtRate(c.rate)+'</span></td><td class="bench-range">'+c.bench.low+'\u2013'+c.bench.high+'%</td><td style="font-size:12px;color:'+(status==="good"?B.green:status==="ok"?B.amber:B.red)+';font-weight:700">'+statusText+'</td></tr>';
-  }).join("");
-  let whatifHtml = "";
-  if(whatifs.length > 0){
-    const rows = whatifs.map((w,i) => '<div class="whatif-row"><div style="display:flex;align-items:center;gap:8px"><div class="whatif-rank">'+(i+1)+'</div><div><div class="whatif-stage">'+w.label+'</div><div class="whatif-rates">'+fmtRate(w.currentRate)+' \u2192 '+w.benchMidRate+'% (benchmark mid)</div></div></div><div class="whatif-stat"><div class="ws-val" style="color:'+B.green+'">'+w.projectedWon.toFixed(1)+'</div><div class="ws-label">proj. won</div></div><div class="whatif-stat"><div class="ws-val" style="color:'+B.gold+'">+'+w.uplift.toFixed(1)+'</div><div class="ws-label">uplift</div></div><div class="whatif-stat"><div class="ws-val" style="color:'+B.warm+'">'+fmtDollar(w.addedRev)+'</div><div class="ws-label">added ARR</div></div></div>').join("");
-    whatifHtml = '<div class="card section-gap"><div class="card-title">Stage Improvement Ranking \u2014 fix to benchmark midpoint</div><p style="font-size:12px;color:var(--fog);margin-bottom:12px;font-family:Source Serif 4,serif;font-style:italic">If each stage were brought to benchmark midpoint independently, ranked by customer uplift.</p>'+rows+'</div>';
-  } else {
-    whatifHtml = '<div class="card section-gap"><div class="card-title">Stage Improvement Ranking</div><div class="empty-state" style="padding:20px">All stages at or above benchmark midpoint \u2014 nothing to rank.</div></div>';
-  }
-  const pDiag = primary;
-  const diagHtml = '<div class="card section-gap"><div class="card-title">Primary Diagnostic \u2014 '+pDiag.label+'</div><div style="margin-bottom:14px"><span class="rate-pill '+pillClass(pDiag.status)+'" style="margin-right:8px">'+fmtRate(pDiag.rate)+'</span><span class="bench-range">benchmark: '+pDiag.bench.low+'\u2013'+pDiag.bench.high+'%</span><span style="margin-left:8px;font-size:12px;color:var(--fog)">'+pDiag.from+' \u2192 '+pDiag.to+'</span></div><div class="diag-section-title">Root Causes</div><ul class="diag-list">'+pDiag.rootCauses.map(r=>'<li>'+r+'</li>').join("")+'</ul><div class="diag-section-title">Diagnostic Questions</div><ul class="diag-list">'+pDiag.questions.map(q=>'<li>'+q+'</li>').join("")+'</ul><div class="diag-section-title">Recommended Actions</div><ul class="diag-list">'+pDiag.actions.map(a=>'<li>'+a+'</li>').join("")+'</ul></div>';
-  const accordionItems = convs.map(c => {
-    const bStyle = c.status==="good"?'background:'+B.greenBg+';color:'+B.green:c.status==="ok"?'background:'+B.amberBg+';color:'+B.amber:'background:'+B.redBg+';color:'+B.red;
-    return '<div class="diag-card"><div class="diag-header" data-action="toggle-diag" data-id="'+c.id+'"><div class="diag-header-left"><span class="diag-badge" style="'+bStyle+'">'+fmtRate(c.rate)+'</span><span style="font-weight:700;font-size:14px;font-family:Playfair Display,serif;color:var(--warm)">'+c.label+'</span><span style="font-size:12px;color:var(--fog)">'+c.from+' \u2192 '+c.to+'</span></div><span style="font-size:12px;color:var(--fog);flex-shrink:0">Bench: '+c.bench.low+'\u2013'+c.bench.high+'% \u25BE</span></div><div class="diag-body" id="diag-'+c.id+'"><div class="diag-section-title">Root Causes</div><ul class="diag-list">'+c.rootCauses.map(r=>'<li>'+r+'</li>').join("")+'</ul><div class="diag-section-title">Diagnostic Questions</div><ul class="diag-list">'+c.questions.map(q=>'<li>'+q+'</li>').join("")+'</ul><div class="diag-section-title">Recommended Actions</div><ul class="diag-list">'+c.actions.map(a=>'<li>'+a+'</li>').join("")+'</ul><div class="diag-section-title">Why It Matters</div><p style="font-size:13px;color:var(--fog);line-height:1.6;font-family:Source Serif 4,serif;font-style:italic">'+c.impact+'</p></div></div>';
-  }).join("");
-  return metricStrip+effPanel+issueBanner+'<div class="two-col"><div class="card"><div class="card-title">Funnel Volume</div>'+funnelBars+'</div><div class="card"><div class="card-title">Conversion Rates</div><table class="conv-table"><thead><tr><th>Stage</th><th>Rate</th><th>Benchmark</th><th>Status</th></tr></thead><tbody>'+convRows+'</tbody></table></div></div>'+whatifHtml+diagHtml+'<div class="card section-gap"><div class="card-title">All Stage Diagnostics</div>'+accordionItems+'</div>';
-}
+function renderFunnel(){const d=state.drafts[state.currentQ];const convs=computeConvs();const primary=detectPrimary(convs);const hs=healthScore(convs);const eff=effMetrics(d);const whatifs=allWhatIfs(convs);const rev=d.won*d.asp;const metricStrip='<div class="metric-strip"><div class="metric-tile"><div class="label">Health Score</div><div class="value '+scoreClass(hs)+'">'+hs+'</div><div class="sub">out of 100</div></div><div class="metric-tile"><div class="label">Revenue</div><div class="value">'+fmtDollar(rev)+'</div><div class="sub">'+fmtN(d.won)+' won \u00D7 '+fmtDollar(d.asp)+' ASP</div></div><div class="metric-tile"><div class="label">Pipeline</div><div class="value">'+fmtDollar(d.opps*d.asp)+'</div><div class="sub">'+fmtN(d.opps)+' open opps</div></div><div class="metric-tile"><div class="label">Leads</div><div class="value">'+fmtN(d.leads)+'</div><div class="sub">from '+fmtN(d.visitors)+' visitors</div></div></div>';let effPanel="";if(eff){effPanel='<div class="eff-panel"><div class="eff-title">Marketing Spend Efficiency \u2014 '+fmtDollar(d.spend)+' invested</div><div class="eff-grid"><div class="eff-item"><div class="e-label">Cost per Lead</div><div class="e-value">'+fmtDollar(eff.cpl)+'</div></div><div class="eff-item"><div class="e-label">Cost per MQL</div><div class="e-value">'+fmtDollar(eff.cpMql)+'</div></div><div class="eff-item"><div class="e-label">CAC</div><div class="e-value">'+fmtDollar(eff.cac)+'</div></div><div class="eff-item"><div class="e-label">Pipeline ROI</div><div class="e-value">'+fmtROI(eff.pipeROI)+'</div></div><div class="eff-item"><div class="e-label">Revenue ROI</div><div class="e-value">'+fmtROI(eff.revROI)+'</div></div></div></div>';}const issC=primary.deficit>0?(primary.status==="bad"?"red":primary.status==="low"?"amber":"teal"):"teal";const issIcon=issC==="red"?"\u26A0":issC==="amber"?"\u25CF":"\u2713";const issueBanner='<div class="issue-banner '+issC+'"><div class="issue-icon">'+issIcon+'</div><div><div class="issue-title">'+(primary.deficit>0?"Primary issue: "+primary.failureLabel:"Pipeline performing at or above benchmark")+'</div><div class="issue-desc">'+(primary.deficit>0?primary.failureDesc:"All stages are tracking well against benchmark. Keep monitoring for regression.")+'</div></div></div>';const stages=['visitors','leads','mqls','sqls','opps','won'];const maxVol=d.visitors||1;const funnelBars=stages.map(s=>{const val=d[s];const pct=Math.max(2,Math.round((val/maxVol)*100));const colors={visitors:B.gold,leads:B.green,mqls:B.amber,sqls:B.gold,opps:B.red,won:B.fog};const labels={visitors:"Visitors",leads:"Leads",mqls:"MQLs",sqls:"SQLs",opps:"Opps",won:"Won"};return '<div class="funnel-stage"><div class="funnel-label">'+labels[s]+'</div><div class="funnel-bar-wrap"><div class="funnel-bar" style="width:'+pct+'%;background:'+colors[s]+'"></div></div><div class="funnel-count">'+fmtN(val)+'</div></div>';}).join("");const convRows=convs.map(c=>{const status=c.status;const pClass=pillClass(status);const statusText=status==="good"?"\u2191 Good":status==="ok"?"\u2192 OK":status==="low"?"\u2193 Low":"\u2193\u2193 Critical";return '<tr><td style="font-weight:700;font-family:Playfair Display,serif">'+c.label+'</td><td><span class="rate-pill '+pClass+'">'+fmtRate(c.rate)+'</span></td><td class="bench-range">'+c.bench.low+'\u2013'+c.bench.high+'%</td><td style="font-size:12px;color:'+(status==="good"?B.green:status==="ok"?B.amber:B.red)+';font-weight:700">'+statusText+'</td></tr>';}).join("");let whatifHtml="";if(whatifs.length>0){const rows=whatifs.map((w,i)=>'<div class="whatif-row"><div style="display:flex;align-items:center;gap:8px"><div class="whatif-rank">'+(i+1)+'</div><div><div class="whatif-stage">'+w.label+'</div><div class="whatif-rates">'+fmtRate(w.currentRate)+' \u2192 '+w.benchMidRate+'% (benchmark mid)</div></div></div><div class="whatif-stat"><div class="ws-val" style="color:'+B.green+'">'+w.projectedWon.toFixed(1)+'</div><div class="ws-label">proj. won</div></div><div class="whatif-stat"><div class="ws-val" style="color:'+B.gold+'">+'+w.uplift.toFixed(1)+'</div><div class="ws-label">uplift</div></div><div class="whatif-stat"><div class="ws-val" style="color:'+B.warm+'">'+fmtDollar(w.addedRev)+'</div><div class="ws-label">added ARR</div></div></div>').join("");whatifHtml='<div class="card section-gap"><div class="card-title">Stage Improvement Ranking \u2014 fix to benchmark midpoint</div><p style="font-size:12px;color:var(--fog);margin-bottom:12px;font-family:Source Serif 4,serif;font-style:italic">If each stage were brought to benchmark midpoint independently, ranked by customer uplift.</p>'+rows+'</div>';}else{whatifHtml='<div class="card section-gap"><div class="card-title">Stage Improvement Ranking</div><div class="empty-state" style="padding:20px">All stages at or above benchmark midpoint \u2014 nothing to rank.</div></div>';}const pDiag=primary;const diagHtml='<div class="card section-gap"><div class="card-title">Primary Diagnostic \u2014 '+pDiag.label+'</div><div style="margin-bottom:14px"><span class="rate-pill '+pillClass(pDiag.status)+'" style="margin-right:8px">'+fmtRate(pDiag.rate)+'</span><span class="bench-range">benchmark: '+pDiag.bench.low+'\u2013'+pDiag.bench.high+'%</span><span style="margin-left:8px;font-size:12px;color:var(--fog)">'+pDiag.from+' \u2192 '+pDiag.to+'</span></div><div class="diag-section-title">Root Causes</div><ul class="diag-list">'+pDiag.rootCauses.map(r=>'<li>'+r+'</li>').join("")+'</ul><div class="diag-section-title">Diagnostic Questions</div><ul class="diag-list">'+pDiag.questions.map(q=>'<li>'+q+'</li>').join("")+'</ul><div class="diag-section-title">Recommended Actions</div><ul class="diag-list">'+pDiag.actions.map(a=>'<li>'+a+'</li>').join("")+'</ul></div>';const accordionItems=convs.map(c=>{const bStyle=c.status==="good"?'background:'+B.greenBg+';color:'+B.green:c.status==="ok"?'background:'+B.amberBg+';color:'+B.amber:'background:'+B.redBg+';color:'+B.red;return '<div class="diag-card"><div class="diag-header" data-action="toggle-diag" data-id="'+c.id+'"><div class="diag-header-left"><span class="diag-badge" style="'+bStyle+'">'+fmtRate(c.rate)+'</span><span style="font-weight:700;font-size:14px;font-family:Playfair Display,serif;color:var(--warm)">'+c.label+'</span><span style="font-size:12px;color:var(--fog)">'+c.from+' \u2192 '+c.to+'</span></div><span style="font-size:12px;color:var(--fog);flex-shrink:0">Bench: '+c.bench.low+'\u2013'+c.bench.high+'% \u25BE</span></div><div class="diag-body" id="diag-'+c.id+'"><div class="diag-section-title">Root Causes</div><ul class="diag-list">'+c.rootCauses.map(r=>'<li>'+r+'</li>').join("")+'</ul><div class="diag-section-title">Diagnostic Questions</div><ul class="diag-list">'+c.questions.map(q=>'<li>'+q+'</li>').join("")+'</ul><div class="diag-section-title">Recommended Actions</div><ul class="diag-list">'+c.actions.map(a=>'<li>'+a+'</li>').join("")+'</ul><div class="diag-section-title">Why It Matters</div><p style="font-size:13px;color:var(--fog);line-height:1.6;font-family:Source Serif 4,serif;font-style:italic">'+c.impact+'</p></div></div>';}).join("");return metricStrip+effPanel+issueBanner+'<div class="two-col"><div class="card"><div class="card-title">Funnel Volume</div>'+funnelBars+'</div><div class="card"><div class="card-title">Conversion Rates</div><table class="conv-table"><thead><tr><th>Stage</th><th>Rate</th><th>Benchmark</th><th>Status</th></tr></thead><tbody>'+convRows+'</tbody></table></div></div>'+whatifHtml+diagHtml+'<div class="card section-gap"><div class="card-title">All Stage Diagnostics</div>'+accordionItems+'</div>';}
 // ===== RENDER TRENDS TAB =====
-function renderTrends(){
-  const qKeys = ["Q1","Q2","Q3","Q4"];
-  const qCards = qKeys.map(qk => {
-    const snap = state.quarters[qk];
-    const isActive = qk === state.currentQ;
-    const isCompared = state.compareKeys.includes(qk);
-    const isEditing = state.editingNotes === qk;
-    if(!snap){
-      return '<div class="q-card q-empty"><div class="q-label">'+qk+'</div><div style="font-size:13px;color:var(--fog);margin-top:8px;font-family:Source Serif 4,serif;font-style:italic">Not submitted</div></div>';
-    }
-    const scoreCol = scoreColor(snap.healthScore);
-    const scoreTextCls = scoreClass(snap.healthScore);
-    const cmpBtnCls = isCompared ? "btn-compare active" : "btn-compare";
-    let notesSection = "";
-    if(isEditing){
-      notesSection = '<div class="notes-edit-row"><textarea id="notes-edit-'+qk+'" rows="3" placeholder="Add quarter notes...">'+( snap.notes||"")+'</textarea><div style="display:flex;flex-direction:column;gap:4px"><button class="btn-save" data-action="save-notes" data-key="'+qk+'">Save</button><button class="btn-edit" data-action="cancel-notes-edit">Cancel</button></div></div>';
-    } else {
-      const notesText = snap.notes ? truncate(snap.notes, 80) : "";
-      notesSection = '<div class="q-notes">'+(notesText || '<em style="color:var(--fog)">No notes</em>')+'</div>';
-    }
-    return '<div class="q-card'+(isActive?" q-card-active":"")+'"><div style="display:flex;justify-content:space-between;align-items:center"><div class="q-label">'+qk+'</div><button class="btn btn-edit btn-sm" data-action="edit-notes" data-key="'+qk+'">Edit</button></div><div class="q-score '+scoreTextCls+'" style="color:'+scoreCol+'">'+snap.healthScore+'</div><div class="q-rev">'+fmtDollar(snap.revenue)+' revenue</div><div style="font-size:11px;color:var(--fog);margin-top:2px">'+fmtN(snap.data.won)+' won \u00B7 '+fmtN(snap.data.opps)+' opps</div>'+notesSection+'<div class="q-card-footer"><button class="btn btn-sm '+cmpBtnCls+'" data-action="toggle-compare" data-key="'+qk+'">'+(isCompared ? "Comparing" : "Compare")+'</button><button class="btn btn-sm btn-ghost" data-action="print-quarter" data-key="'+qk+'">Print</button></div></div>';
-  }).join("");
-  let compareDrawer = "";
-  if(state.compareKeys.length === 2){
-    const ka = state.compareKeys[0], kb = state.compareKeys[1];
-    const sa = state.quarters[ka], sb = state.quarters[kb];
-    if(sa && sb){
-      const makeRow = function(label, vA, vB, type){
-        const fmtFn = type==="dollar" ? fmtDollar : type==="pct" ? fmtRate : fmtN;
-        return '<div class="compare-row"><div class="cmp-val">'+fmtFn(vA)+'</div><div style="display:flex;flex-direction:column;align-items:center;gap:2px"><div class="cmp-row-label">'+label+'</div>'+deltaHtml(vB, vA, type)+'</div><div class="cmp-val">'+fmtFn(vB)+'</div></div>';
-      };
-      const scoreRow = '<div class="compare-row"><div class="cmp-val '+scoreClass(sa.healthScore)+'" style="color:'+scoreColor(sa.healthScore)+'">'+sa.healthScore+'</div><div style="display:flex;flex-direction:column;align-items:center;gap:2px"><div class="cmp-row-label">Health Score</div>'+deltaHtml(sb.healthScore, sa.healthScore, "count")+'</div><div class="cmp-val '+scoreClass(sb.healthScore)+'" style="color:'+scoreColor(sb.healthScore)+'">'+sb.healthScore+'</div></div>';
-      const volRows = [['Visitors','visitors','count'],['Leads','leads','count'],['MQLs','mqls','count'],['SQLs','sqls','count'],['Opps','opps','count'],['Won','won','count'],['Revenue','revenue','dollar']].map(function(arr){
-        const lbl=arr[0],key=arr[1],type=arr[2];
-        const vA = key==='revenue' ? sa.revenue : sa.data[key];
-        const vB = key==='revenue' ? sb.revenue : sb.data[key];
-        return makeRow(lbl, vA, vB, type);
-      }).join("");
-      const convRows2 = CONVS.map(function(c){
-        return makeRow(c.short, sa.rates[c.id], sb.rates[c.id], "pct");
-      }).join("");
-      compareDrawer = '<div class="compare-drawer"><div class="compare-title">Comparing '+ka+' vs '+kb+'</div><div style="display:grid;grid-template-columns:1fr auto 1fr;text-align:center;margin-bottom:12px"><div class="cmp-label">'+ka+'</div><div></div><div class="cmp-label">'+kb+'</div></div>'+scoreRow+'<div class="compare-section-hdr">Volume Metrics</div>'+volRows+'<div class="compare-section-hdr">Conversion Rates</div>'+convRows2+'</div>';
-    }
-  }
-  const submittedKeys = qKeys.filter(function(k){ return state.quarters[k]; });
-  let timelineHtml = "";
-  if(submittedKeys.length > 0){
-    const rows = qKeys.map(function(qk){
-      const snap = state.quarters[qk];
-      if(!snap) return '<div class="timeline-row"><div class="tl-quarter">'+qk+'</div><div class="tl-bar-wrap"><div style="font-size:11px;color:var(--fog);padding:6px 0">\u2014</div></div></div>';
-      const barW = Math.max(4, snap.healthScore);
-      const barCol = scoreColor(snap.healthScore);
-      const isEditing = state.editingNotes === qk;
-      const notesText = snap.notes ? truncate(snap.notes, 80) : "";
-      let notesDisplay = "";
-      if(isEditing){
-        notesDisplay = '<div class="notes-edit-row" style="margin-top:6px"><textarea id="tl-notes-edit-'+qk+'" rows="2" placeholder="Add notes...">'+(snap.notes||"")+'</textarea><div style="display:flex;gap:4px"><button class="btn-save" data-action="save-notes" data-key="'+qk+'">Save</button><button class="btn-edit" data-action="cancel-notes-edit">Cancel</button></div></div>';
-      } else {
-        notesDisplay = '<div class="tl-notes"><span>'+(notesText || '<em style="color:var(--fog)">No notes</em>')+'</span><button class="btn-edit" data-action="edit-notes" data-key="'+qk+'">Edit</button></div>';
-      }
-      return '<div class="timeline-row"><div class="tl-quarter">'+qk+'</div><div class="tl-bar-wrap"><div class="tl-bar" style="width:'+barW+'%;background:'+barCol+';max-width:100%">'+snap.healthScore+'</div>'+notesDisplay+'</div></div>';
-    }).join("");
-    timelineHtml = '<div class="card section-gap"><div class="card-title">Health Score Timeline</div>'+rows+'</div>';
-  }
-  const convTrendHeader = '<tr><th>Stage</th>'+qKeys.map(function(k){return '<th>'+k+'</th>';}).join("")+'</tr>';
-  const convTrendRows = CONVS.map(function(c){
-    const cells = qKeys.map(function(k){
-      const snap = state.quarters[k];
-      if(!snap) return '<td style="color:var(--fog)">\u2014</td>';
-      return '<td><span class="rate-pill '+pillClass(snap.statuses[c.id])+'">'+fmtRate(snap.rates[c.id])+'</span></td>';
-    }).join("");
-    return '<tr><td>'+c.label+'</td>'+cells+'</tr>';
-  }).join("");
-  const volKeys = ['visitors','leads','mqls','sqls','opps','won'];
-  const volLabels = {visitors:'Visitors',leads:'Leads',mqls:'MQLs',sqls:'SQLs',opps:'Opps',won:'Won'};
-  const volTrendHeader = '<tr><th>Metric</th>'+qKeys.map(function(k){return '<th>'+k+'</th>';}).join("")+'</tr>';
-  const volTrendRows = volKeys.map(function(vk){
-    const cells = qKeys.map(function(k){
-      const snap = state.quarters[k];
-      if(!snap) return '<td style="color:var(--fog)">\u2014</td>';
-      return '<td>'+fmtN(snap.data[vk])+'</td>';
-    }).join("");
-    return '<tr><td>'+volLabels[vk]+'</td>'+cells+'</tr>';
-  }).join("");
-  const trendsTablesHtml = submittedKeys.length > 0 ? '<div class="card section-gap"><div class="card-title">Conversion Rate Trends</div><div style="overflow-x:auto"><table class="trends-table"><thead>'+convTrendHeader+'</thead><tbody>'+convTrendRows+'</tbody></table></div></div><div class="card section-gap"><div class="card-title">Volume Trends</div><div style="overflow-x:auto"><table class="trends-table"><thead>'+volTrendHeader+'</thead><tbody>'+volTrendRows+'</tbody></table></div></div>' : '<div class="empty-state card">Submit at least one quarter snapshot to see trends.</div>';
-  return '<div class="trends-header"><h2 style="font-size:16px;font-weight:700;color:var(--warm);font-family:Playfair Display,serif">Quarterly <em style="color:var(--gold);font-style:italic">Trends</em></h2><button class="btn btn-print btn-sm" data-action="print-trends">Print Report</button></div><div class="q-grid">'+qCards+'</div>'+compareDrawer+timelineHtml+trendsTablesHtml;
-}
+function renderTrends(){const qKeys=["Q1","Q2","Q3","Q4"];const qCards=qKeys.map(qk=>{const snap=state.quarters[qk];const isActive=qk===state.currentQ;const isCompared=state.compareKeys.includes(qk);const isEditing=state.editingNotes===qk;if(!snap){return '<div class="q-card q-empty"><div class="q-label">'+qk+'</div><div style="font-size:13px;color:var(--fog);margin-top:8px;font-family:Source Serif 4,serif;font-style:italic">Not submitted</div></div>';}const scoreCol=scoreColor(snap.healthScore);const scoreTextCls=scoreClass(snap.healthScore);const cmpBtnCls=isCompared?"btn-compare active":"btn-compare";let notesSection="";if(isEditing){notesSection='<div class="notes-edit-row"><textarea id="notes-edit-'+qk+'" rows="3" placeholder="Add quarter notes...">'+(snap.notes||"")+'</textarea><div style="display:flex;flex-direction:column;gap:4px"><button class="btn-save" data-action="save-notes" data-key="'+qk+'">Save</button><button class="btn-edit" data-action="cancel-notes-edit">Cancel</button></div></div>';}else{const notesText=snap.notes?truncate(snap.notes,80):"";notesSection='<div class="q-notes">'+(notesText||'<em style="color:var(--fog)">No notes</em>')+'</div>';}return '<div class="q-card'+(isActive?" q-card-active":"")+'"><div style="display:flex;justify-content:space-between;align-items:center"><div class="q-label">'+qk+'</div><button class="btn btn-edit btn-sm" data-action="edit-notes" data-key="'+qk+'">Edit</button></div><div class="q-score '+scoreTextCls+'" style="color:'+scoreCol+'">'+snap.healthScore+'</div><div class="q-rev">'+fmtDollar(snap.revenue)+' revenue</div><div style="font-size:11px;color:var(--fog);margin-top:2px">'+fmtN(snap.data.won)+' won \u00B7 '+fmtN(snap.data.opps)+' opps</div>'+notesSection+'<div class="q-card-footer"><button class="btn btn-sm '+cmpBtnCls+'" data-action="toggle-compare" data-key="'+qk+'">'+(isCompared?"Comparing":"Compare")+'</button><button class="btn btn-sm btn-ghost" data-action="print-quarter" data-key="'+qk+'">Print</button></div></div>';}).join("");let compareDrawer="";if(state.compareKeys.length===2){const ka=state.compareKeys[0],kb=state.compareKeys[1];const sa=state.quarters[ka],sb=state.quarters[kb];if(sa&&sb){const makeRow=function(label,vA,vB,type){const fmtFn=type==="dollar"?fmtDollar:type==="pct"?fmtRate:fmtN;return '<div class="compare-row"><div class="cmp-val">'+fmtFn(vA)+'</div><div style="display:flex;flex-direction:column;align-items:center;gap:2px"><div class="cmp-row-label">'+label+'</div>'+deltaHtml(vB,vA,type)+'</div><div class="cmp-val">'+fmtFn(vB)+'</div></div>';};const scoreRow='<div class="compare-row"><div class="cmp-val '+scoreClass(sa.healthScore)+'" style="color:'+scoreColor(sa.healthScore)+'">'+sa.healthScore+'</div><div style="display:flex;flex-direction:column;align-items:center;gap:2px"><div class="cmp-row-label">Health Score</div>'+deltaHtml(sb.healthScore,sa.healthScore,"count")+'</div><div class="cmp-val '+scoreClass(sb.healthScore)+'" style="color:'+scoreColor(sb.healthScore)+'">'+sb.healthScore+'</div></div>';const volRows=[['Visitors','visitors','count'],['Leads','leads','count'],['MQLs','mqls','count'],['SQLs','sqls','count'],['Opps','opps','count'],['Won','won','count'],['Revenue','revenue','dollar']].map(function(arr){const lbl=arr[0],key=arr[1],type=arr[2];const vA=key==='revenue'?sa.revenue:sa.data[key];const vB=key==='revenue'?sb.revenue:sb.data[key];return makeRow(lbl,vA,vB,type);}).join("");const convRows2=CONVS.map(function(c){return makeRow(c.short,sa.rates[c.id],sb.rates[c.id],"pct");}).join("");compareDrawer='<div class="compare-drawer"><div class="compare-title">Comparing '+ka+' vs '+kb+'</div><div style="display:grid;grid-template-columns:1fr auto 1fr;text-align:center;margin-bottom:12px"><div class="cmp-label">'+ka+'</div><div></div><div class="cmp-label">'+kb+'</div></div>'+scoreRow+'<div class="compare-section-hdr">Volume Metrics</div>'+volRows+'<div class="compare-section-hdr">Conversion Rates</div>'+convRows2+'</div>';}}const submittedKeys=qKeys.filter(function(k){return state.quarters[k];});let timelineHtml="";if(submittedKeys.length>0){const rows=qKeys.map(function(qk){const snap=state.quarters[qk];if(!snap)return '<div class="timeline-row"><div class="tl-quarter">'+qk+'</div><div class="tl-bar-wrap"><div style="font-size:11px;color:var(--fog);padding:6px 0">\u2014</div></div></div>';const barW=Math.max(4,snap.healthScore);const barCol=scoreColor(snap.healthScore);const isEditing=state.editingNotes===qk;const notesText=snap.notes?truncate(snap.notes,80):"";let notesDisplay="";if(isEditing){notesDisplay='<div class="notes-edit-row" style="margin-top:6px"><textarea id="tl-notes-edit-'+qk+'" rows="2" placeholder="Add notes...">'+(snap.notes||"")+'</textarea><div style="display:flex;gap:4px"><button class="btn-save" data-action="save-notes" data-key="'+qk+'">Save</button><button class="btn-edit" data-action="cancel-notes-edit">Cancel</button></div></div>';}else{notesDisplay='<div class="tl-notes"><span>'+(notesText||'<em style="color:var(--fog)">No notes</em>')+'</span><button class="btn-edit" data-action="edit-notes" data-key="'+qk+'">Edit</button></div>';}return '<div class="timeline-row"><div class="tl-quarter">'+qk+'</div><div class="tl-bar-wrap"><div class="tl-bar" style="width:'+barW+'%;background:'+barCol+';max-width:100%">'+snap.healthScore+'</div>'+notesDisplay+'</div></div>';}).join("");timelineHtml='<div class="card section-gap"><div class="card-title">Health Score Timeline</div>'+rows+'</div>';}const convTrendHeader='<tr><th>Stage</th>'+qKeys.map(function(k){return '<th>'+k+'</th>';}).join("")+'</tr>';const convTrendRows=CONVS.map(function(c){const cells=qKeys.map(function(k){const snap=state.quarters[k];if(!snap)return '<td style="color:var(--fog)">\u2014</td>';return '<td><span class="rate-pill '+pillClass(snap.statuses[c.id])+'">'+fmtRate(snap.rates[c.id])+'</span></td>';}).join("");return '<tr><td>'+c.label+'</td>'+cells+'</tr>';}).join("");const volKeys=['visitors','leads','mqls','sqls','opps','won'];const volLabels={visitors:'Visitors',leads:'Leads',mqls:'MQLs',sqls:'SQLs',opps:'Opps',won:'Won'};const volTrendHeader='<tr><th>Metric</th>'+qKeys.map(function(k){return '<th>'+k+'</th>';}).join("")+'</tr>';const volTrendRows=volKeys.map(function(vk){const cells=qKeys.map(function(k){const snap=state.quarters[k];if(!snap)return '<td style="color:var(--fog)">\u2014</td>';return '<td>'+fmtN(snap.data[vk])+'</td>';}).join("");return '<tr><td>'+volLabels[vk]+'</td>'+cells+'</tr>';}).join("");const trendsTablesHtml=submittedKeys.length>0?'<div class="card section-gap"><div class="card-title">Conversion Rate Trends</div><div style="overflow-x:auto"><table class="trends-table"><thead>'+convTrendHeader+'</thead><tbody>'+convTrendRows+'</tbody></table></div></div><div class="card section-gap"><div class="card-title">Volume Trends</div><div style="overflow-x:auto"><table class="trends-table"><thead>'+volTrendHeader+'</thead><tbody>'+volTrendRows+'</tbody></table></div></div>':'<div class="empty-state card">Submit at least one quarter snapshot to see trends.</div>';return '<div class="trends-header"><h2 style="font-size:16px;font-weight:700;color:var(--warm);font-family:Playfair Display,serif">Quarterly <em style="color:var(--gold);font-style:italic">Trends</em></h2><button class="btn btn-print btn-sm" data-action="print-trends">Print Report</button></div><div class="q-grid">'+qCards+'</div>'+compareDrawer+timelineHtml+trendsTablesHtml;}
 // ===== RENDER INPUT CARD =====
-function renderInputCard(){
-  const d = state.drafts[state.currentQ];
-  const fields = [
-    {key:'visitors', label:'Visitors'},
-    {key:'leads',    label:'Leads'},
-    {key:'mqls',     label:'MQLs'},
-    {key:'sqls',     label:'SQLs'},
-    {key:'opps',     label:'Opportunities'},
-    {key:'won',      label:'Won Deals'},
-    {key:'asp',      label:'ASP ($)'},
-    {key:'spend',    label:'Mktg Spend ($)'}
-  ];
-  const fieldHtml = fields.map(function(f){
-    return '<div class="input-group"><label>'+f.label+'</label><input type="number" min="0" data-action="update-draft" data-field="'+f.key+'" value="'+d[f.key]+'"></div>';
-  }).join("");
-  return '<div class="card section-gap"><div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;flex-wrap:wrap;gap:10px"><div class="card-title" style="margin-bottom:0">'+state.currentQ+' \u2014 Enter Funnel Data</div><div style="display:flex;gap:6px">'+["Q1","Q2","Q3","Q4"].map(function(q){return '<button class="btn btn-sm '+(q===state.currentQ?"btn-primary":"btn-ghost")+'" data-action="set-quarter" data-q="'+q+'">'+q+'</button>';}).join("")+'</div></div><div class="input-grid">'+fieldHtml+'<div class="input-group notes-full"><label>Quarter Notes <span style="font-weight:400;color:var(--fog)">(optional, encouraged)</span></label><textarea data-action="update-notes" placeholder="Key events, campaigns, context for this quarter...">'+d.notes+'</textarea></div></div><div style="margin-top:16px;display:flex;gap:10px;flex-wrap:wrap"><button class="btn btn-primary" data-action="submit-snapshot">Submit '+state.currentQ+' Snapshot \u2192</button><button class="btn btn-ghost btn-sm" data-action="reset-draft">Reset</button><button class="btn btn-print btn-sm" data-action="print-current">Print Report</button></div></div>';
-}
+function renderInputCard(){const d=state.drafts[state.currentQ];const fields=[{key:'visitors',label:'Visitors'},{key:'leads',label:'Leads'},{key:'mqls',label:'MQLs'},{key:'sqls',label:'SQLs'},{key:'opps',label:'Opportunities'},{key:'won',label:'Won Deals'},{key:'asp',label:'ASP ($)'},{key:'spend',label:'Mktg Spend ($)'}];const fieldHtml=fields.map(function(f){return '<div class="input-group"><label>'+f.label+'</label><input type="number" min="0" data-action="update-draft" data-field="'+f.key+'" value="'+d[f.key]+'"></div>';}).join("");return '<div class="card section-gap"><div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;flex-wrap:wrap;gap:10px"><div class="card-title" style="margin-bottom:0">'+state.currentQ+' \u2014 Enter Funnel Data</div><div style="display:flex;gap:6px">'+["Q1","Q2","Q3","Q4"].map(function(q){return '<button class="btn btn-sm '+(q===state.currentQ?"btn-primary":"btn-ghost")+'" data-action="set-quarter" data-q="'+q+'">'+q+'</button>';}).join("")+'</div></div><div class="input-grid">'+fieldHtml+'<div class="input-group notes-full"><label>Quarter Notes <span style="font-weight:400;color:var(--fog)">(optional, encouraged)</span></label><textarea data-action="update-notes" placeholder="Key events, campaigns, context for this quarter...">'+d.notes+'</textarea></div></div><div style="margin-top:16px;display:flex;gap:10px;flex-wrap:wrap"><button class="btn btn-primary" data-action="submit-snapshot">Submit '+state.currentQ+' Snapshot \u2192</button><button class="btn btn-ghost btn-sm" data-action="reset-draft">Reset</button><button class="btn btn-print btn-sm" data-action="print-current">Print Report</button></div></div>';}
 // ===== MAIN RENDER =====
 function render(){
-  const app = document.getElementById('app');
-  const header = '<div class="hdr"><div class="hdr-left"><div style="font-family:Playfair Display,serif;font-size:18px;font-weight:900;color:var(--warm)">Pipeline <em style="color:var(--gold);font-style:italic">Fitness</em></div><div style="height:24px;width:1px;background:var(--goldDim)"></div><div class="tab-bar"><button class="tab-btn '+(state.tab==="funnel"?"active":"")+'" data-action="set-tab" data-tab="funnel">Funnel Analysis</button><button class="tab-btn '+(state.tab==="trends"?"active":"")+'" data-action="set-tab" data-tab="trends">Trends</button></div></div><div class="hdr-right"><div class="bench-selector"><button class="bench-btn '+(state.benchProfile==="smb"?"active":"")+'" data-action="set-bench" data-profile="smb">SMB</button><button class="bench-btn '+(state.benchProfile==="midmarket"?"active":"")+'" data-action="set-bench" data-profile="midmarket">Mid-Market</button><button class="bench-btn '+(state.benchProfile==="enterprise"?"active":"")+'" data-action="set-bench" data-profile="enterprise">Enterprise</button></div></div></div>';
-  let tabContent = "";
-  if(state.tab === "funnel"){
-    tabContent = renderInputCard() + renderFunnel();
-  } else {
-    tabContent = renderTrends();
-  }
-  const credit = '<div class="credit">built by <a href="https://github.com/punsandrosess" target="_blank">punsandrosess</a></div><div class="credit" style="color:var(--warm);padding-top:0;margin-top:-12px">this framework is powered by Sam Kuehnle\u2019s excellent post titled \u201c<a href="https://www.samkuehnle.com/p/ive-audited-100-funnels-heres-what-i-found" target="_blank" style="color:var(--warm);text-decoration:underline">I\u2019ve audited 100+ funnels. Here\u2019s what I found.</a>\u201d</div>';
-  app.innerHTML = header + tabContent + credit;
-  openDiags.forEach(function(id){
-    const el = document.getElementById('diag-'+id);
-    if(el) el.classList.add('open');
-  });
-  if(state.editingNotes){
-    const ta = document.getElementById('notes-edit-'+state.editingNotes) || document.getElementById('tl-notes-edit-'+state.editingNotes);
-    if(ta){ ta.focus(); ta.setSelectionRange(ta.value.length, ta.value.length); }
-  }
+  const app=document.getElementById('app');
+
+  // ── HEADER — punsandrosess design system treatment ──────────────
+  const header=`<div class="hdr">
+    <div class="hdr-left">
+      <div>
+        <div style="display:flex;align-items:baseline;gap:0;margin-bottom:6px;line-height:1">
+          <span style="font-family:'Playfair Display',serif;font-weight:900;font-size:22px;color:#F5F0E8;letter-spacing:-.02em">puns</span><em style="font-family:'Playfair Display',serif;font-weight:700;font-size:22px;color:#C9A84C;font-style:italic;letter-spacing:-.01em">androsess</em>
+        </div>
+        <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">
+          <span style="font-family:'Space Mono',monospace;font-size:9px;color:#C9A84C;letter-spacing:.22em;text-transform:uppercase">Marketing · FY2026</span>
+          <span style="color:rgba(201,168,76,0.3)">·</span>
+          <span style="font-family:'Space Mono',monospace;font-size:9px;color:#6B6B5E;letter-spacing:.1em">Funnel Intelligence</span>
+          <span style="color:rgba(201,168,76,0.3)">·</span>
+          <span style="font-family:'Playfair Display',serif;font-weight:700;font-size:13px;color:#F5F0E8;letter-spacing:-.01em">Pipeline <em style="color:#C9A84C;font-style:italic">Fitness</em></span>
+        </div>
+      </div>
+      <div style="height:36px;width:1px;background:rgba(201,168,76,0.3)"></div>
+      <div class="tab-bar">
+        <button class="tab-btn ${state.tab==="funnel"?"active":""}" data-action="set-tab" data-tab="funnel">Funnel Analysis</button>
+        <button class="tab-btn ${state.tab==="trends"?"active":""}" data-action="set-tab" data-tab="trends">Trends</button>
+      </div>
+    </div>
+    <div class="hdr-right">
+      <div class="bench-selector">
+        <button class="bench-btn ${state.benchProfile==="smb"?"active":""}" data-action="set-bench" data-profile="smb">SMB</button>
+        <button class="bench-btn ${state.benchProfile==="midmarket"?"active":""}" data-action="set-bench" data-profile="midmarket">Mid-Market</button>
+        <button class="bench-btn ${state.benchProfile==="enterprise"?"active":""}" data-action="set-bench" data-profile="enterprise">Enterprise</button>
+      </div>
+    </div>
+  </div>`;
+
+  let tabContent="";
+  if(state.tab==="funnel"){tabContent=renderInputCard()+renderFunnel();}
+  else{tabContent=renderTrends();}
+  const credit='<div class="credit">built by <a href="https://github.com/punsandrosess" target="_blank">punsandrosess</a></div><div class="credit" style="color:var(--warm);padding-top:0;margin-top:-12px">this framework is powered by Sam Kuehnle\u2019s excellent post titled \u201c<a href="https://www.samkuehnle.com/p/ive-audited-100-funnels-heres-what-i-found" target="_blank" style="color:var(--warm);text-decoration:underline">I\u2019ve audited 100+ funnels. Here\u2019s what I found.</a>\u201d</div>';
+  app.innerHTML=header+tabContent+credit;
+  openDiags.forEach(function(id){const el=document.getElementById('diag-'+id);if(el)el.classList.add('open');});
+  if(state.editingNotes){const ta=document.getElementById('notes-edit-'+state.editingNotes)||document.getElementById('tl-notes-edit-'+state.editingNotes);if(ta){ta.focus();ta.setSelectionRange(ta.value.length,ta.value.length);}}
 }
 // ===== OPEN DIAGNOSTICS TRACKER =====
-const openDiags = new Set();
+const openDiags=new Set();
 // ===== EVENT DELEGATION =====
-document.addEventListener('DOMContentLoaded', function(){
-  loadState();
-  render();
-  document.getElementById('app').addEventListener('click', function(e){
-    const el = e.target.closest('[data-action]');
-    if(!el) return;
-    const action = el.dataset.action;
-    if(action === 'set-tab'){ state.tab = el.dataset.tab; render(); }
-    else if(action === 'set-quarter'){ state.currentQ = el.dataset.q; saveState(); render(); }
-    else if(action === 'set-bench'){ state.benchProfile = el.dataset.profile; saveState(); render(); }
-    else if(action === 'submit-snapshot'){ submitSnapshot(); }
-    else if(action === 'reset-draft'){ state.drafts[state.currentQ] = blankDraft(); saveState(); render(); }
-    else if(action === 'print-current'){ printReport(null); }
-    else if(action === 'print-quarter'){ printReport(el.dataset.key); }
-    else if(action === 'print-trends'){
-      const hasSnaps = Object.keys(state.quarters).length > 0;
-      const firstKey = hasSnaps ? Object.keys(state.quarters)[0] : null;
-      printReport(firstKey);
-    }
-    else if(action === 'toggle-diag'){
-      const id = el.dataset.id;
-      const body = document.getElementById('diag-'+id);
-      if(body){
-        body.classList.toggle('open');
-        if(body.classList.contains('open')) openDiags.add(id);
-        else openDiags.delete(id);
-      }
-    }
-    else if(action === 'toggle-compare'){
-      const key = el.dataset.key;
-      if(state.compareKeys.includes(key)){
-        state.compareKeys = state.compareKeys.filter(function(k){return k !== key;});
-      } else if(state.compareKeys.length < 2){
-        state.compareKeys = state.compareKeys.concat([key]);
-      } else {
-        state.compareKeys = [state.compareKeys[1], key];
-      }
-      saveState();
-      render();
-    }
-    else if(action === 'edit-notes'){ state.editingNotes = el.dataset.key; render(); }
-    else if(action === 'cancel-notes-edit'){ state.editingNotes = null; render(); }
-    else if(action === 'save-notes'){
-      const key = el.dataset.key;
-      const ta = document.getElementById('notes-edit-'+key) || document.getElementById('tl-notes-edit-'+key);
-      const newNotes = ta ? ta.value : "";
-      if(state.quarters[key]) state.quarters[key].notes = newNotes;
-      if(state.drafts[key]) state.drafts[key].notes = newNotes;
-      state.editingNotes = null;
-      saveState();
-      render();
-    }
+document.addEventListener('DOMContentLoaded',function(){
+  loadState();render();
+  document.getElementById('app').addEventListener('click',function(e){
+    const el=e.target.closest('[data-action]');if(!el)return;
+    const action=el.dataset.action;
+    if(action==='set-tab'){state.tab=el.dataset.tab;render();}
+    else if(action==='set-quarter'){state.currentQ=el.dataset.q;saveState();render();}
+    else if(action==='set-bench'){state.benchProfile=el.dataset.profile;saveState();render();}
+    else if(action==='submit-snapshot'){submitSnapshot();}
+    else if(action==='reset-draft'){state.drafts[state.currentQ]=blankDraft();saveState();render();}
+    else if(action==='print-current'){printReport(null);}
+    else if(action==='print-quarter'){printReport(el.dataset.key);}
+    else if(action==='print-trends'){const hasSnaps=Object.keys(state.quarters).length>0;const firstKey=hasSnaps?Object.keys(state.quarters)[0]:null;printReport(firstKey);}
+    else if(action==='toggle-diag'){const id=el.dataset.id;const body=document.getElementById('diag-'+id);if(body){body.classList.toggle('open');if(body.classList.contains('open'))openDiags.add(id);else openDiags.delete(id);}}
+    else if(action==='toggle-compare'){const key=el.dataset.key;if(state.compareKeys.includes(key)){state.compareKeys=state.compareKeys.filter(function(k){return k!==key;});}else if(state.compareKeys.length<2){state.compareKeys=state.compareKeys.concat([key]);}else{state.compareKeys=[state.compareKeys[1],key];}saveState();render();}
+    else if(action==='edit-notes'){state.editingNotes=el.dataset.key;render();}
+    else if(action==='cancel-notes-edit'){state.editingNotes=null;render();}
+    else if(action==='save-notes'){const key=el.dataset.key;const ta=document.getElementById('notes-edit-'+key)||document.getElementById('tl-notes-edit-'+key);const newNotes=ta?ta.value:"";if(state.quarters[key])state.quarters[key].notes=newNotes;if(state.drafts[key])state.drafts[key].notes=newNotes;state.editingNotes=null;saveState();render();}
   });
-  document.getElementById('app').addEventListener('input', function(e){
-    const el = e.target;
-    if(el.dataset.action === 'update-draft'){
-      const field = el.dataset.field;
-      const val = parseFloat(el.value) || 0;
-      state.drafts[state.currentQ][field] = val;
-      saveState();
-      renderLive();
-    }
-    if(el.dataset.action === 'update-notes'){
-      state.drafts[state.currentQ].notes = el.value;
-      saveState();
-    }
+  document.getElementById('app').addEventListener('input',function(e){
+    const el=e.target;
+    if(el.dataset.action==='update-draft'){const field=el.dataset.field;const val=parseFloat(el.value)||0;state.drafts[state.currentQ][field]=val;saveState();renderLive();}
+    if(el.dataset.action==='update-notes'){state.drafts[state.currentQ].notes=el.value;saveState();}
   });
 });
 // ===== LIVE RE-RENDER =====
-function renderLive(){
-  const d = state.drafts[state.currentQ];
-  const convs = computeConvs();
-  const hs = healthScore(convs);
-  const scoreEl = document.querySelector('.metric-tile .value');
-  if(scoreEl){
-    scoreEl.className = 'value '+scoreClass(hs);
-    scoreEl.textContent = hs;
-  }
-}
+function renderLive(){const d=state.drafts[state.currentQ];const convs=computeConvs();const hs=healthScore(convs);const scoreEl=document.querySelector('.metric-tile .value');if(scoreEl){scoreEl.className='value '+scoreClass(hs);scoreEl.textContent=hs;}}
 </script>
 </body>
 </html>

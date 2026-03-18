@@ -4,7 +4,7 @@
 
 Bad quarters aren't surprises. They're forecasts you didn't read early enough.
 
-One of these tools exists because I got tired of finding out about pipeline gaps in week 12 of a quarter. By then you're not running a play — you're writing a post-mortem. The other is based on excellent work by Sam Kuehnle, and I am much better at playing with Claude Code than writing thank you cards.
+One of these tools exists because I got tired of finding out about pipeline gaps in week 12 of a quarter. By then you're not running a play — you're writing a post-mortem. The other is based on excellent work by #Sam Kuehnle#, and I am much better at playing with Claude Code than writing thank you cards.
 
 Both tools were built in Claude Code. They're pre-loaded with real targets and real channel weights. Change any input and the math recalculates instantly.
 

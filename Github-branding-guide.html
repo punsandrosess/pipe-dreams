@@ -1,0 +1,280 @@
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,900;1,400;1,700&family=Space+Mono:wght@400;700&family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,600;1,8..60,400;1,8..60,600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --void:#141410;--card:#1E1E18;--gold:#C9A84C;--gold-dim:rgba(201,168,76,0.3);
+  --gold-sub:rgba(201,168,76,0.08);--warm:#F5F0E8;--fog:#6B6B5E;--border:rgba(245,240,232,0.07);
+  --green:#1D9E75;--green-bg:rgba(29,158,117,0.12);
+  --amber:#C9893A;--amber-bg:rgba(201,137,58,0.12);
+  --red:#C0392B;--red-bg:rgba(192,57,43,0.12);
+  --gold-accent-bg:rgba(201,168,76,0.1);--gold-accent-border:rgba(201,168,76,0.25);
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+html{scroll-behavior:smooth;}
+body{
+  background:var(--void);color:var(--warm);font-family:'Space Mono',monospace;
+  font-size:13px;line-height:1.7;padding:40px 20px;
+  background-image:linear-gradient(var(--gold-sub) 1px,transparent 1px),linear-gradient(90deg,var(--gold-sub) 1px,transparent 1px);
+  background-size:40px 40px;
+}
+.page{max-width:860px;margin:0 auto;}
+.card{
+  background:var(--card);border:1px solid var(--border);border-left:3px solid var(--gold);
+  padding:24px 28px;margin-bottom:24px;position:relative;
+}
+.card::before{content:'';position:absolute;top:6px;right:6px;width:10px;height:10px;border-top:1px solid var(--gold-dim);border-right:1px solid var(--gold-dim);}
+.card::after{content:'';position:absolute;bottom:6px;left:6px;width:10px;height:10px;border-bottom:1px solid var(--gold-dim);border-left:1px solid var(--gold-dim);}
+.sec-label{font-family:'Space Mono',monospace;font-weight:700;font-size:9px;color:var(--gold);letter-spacing:.22em;text-transform:uppercase;margin-bottom:12px;display:block;}
+.sec-title{font-family:'Playfair Display',serif;font-weight:900;font-size:28px;color:var(--warm);letter-spacing:-.02em;margin-bottom:16px;}
+p,li{font-family:'Source Serif 4',serif;font-size:14px;line-height:1.8;color:var(--warm);margin-bottom:10px;}
+ul{padding-left:20px;margin-bottom:14px;}
+li{margin-bottom:6px;}
+code{font-family:'Space Mono',monospace;font-size:11px;background:var(--void);border:1px solid var(--border);padding:2px 6px;color:var(--gold);}
+.swatch-row{display:flex;gap:16px;flex-wrap:wrap;margin:14px 0;}
+.swatch{width:80px;text-align:center;}
+.swatch-box{width:80px;height:48px;border:1px solid var(--border);margin-bottom:6px;}
+.swatch-label{font-family:'Space Mono',monospace;font-size:9px;color:var(--fog);letter-spacing:.1em;}
+.swatch-hex{font-family:'Space Mono',monospace;font-size:10px;color:var(--warm);margin-top:2px;}
+.example-header{
+  background:var(--card);border:1px solid var(--border);padding:18px 24px;margin:16px 0;
+  border-bottom:2px solid transparent;border-image:linear-gradient(90deg,var(--gold),transparent) 1;
+  position:relative;
+}
+.divider{border:none;border-top:1px solid var(--border);margin:32px 0;}
+.requirement{
+  background:var(--gold-accent-bg);border:1px solid var(--gold-accent-border);
+  padding:16px 20px;margin:16px 0;font-family:'Source Serif 4',serif;
+  font-style:italic;font-size:14px;color:var(--warm);line-height:1.7;
+}
+.font-sample{margin:10px 0 18px;}
+table{width:100%;border-collapse:collapse;font-size:12px;border:1px solid var(--border);margin:14px 0;}
+th{padding:8px 12px;text-align:left;background:var(--card);color:var(--fog);font-family:'Space Mono',monospace;font-weight:700;font-size:9px;letter-spacing:.14em;text-transform:uppercase;border-bottom:1px solid var(--border);}
+td{padding:8px 12px;text-align:left;border-bottom:1px solid var(--border);font-family:'Source Serif 4',serif;font-size:13px;}
+@media(max-width:600px){
+  body{padding:20px 12px;}
+  .card{padding:16px 14px;}
+  .swatch-row{gap:10px;}
+  .swatch{width:64px;}
+  .swatch-box{width:64px;height:40px;}
+}
+</style>
+
+<div class="page">
+
+  <!-- ── HEADER ── -->
+  <div style="margin-bottom:36px;padding-bottom:24px;border-bottom:1px solid rgba(201,168,76,0.2);position:relative;">
+    <div style="position:absolute;bottom:0;left:0;right:0;height:2px;background:linear-gradient(90deg,#C9A84C,transparent);opacity:.3;"></div>
+    <div style="display:flex;align-items:baseline;gap:0;margin-bottom:10px;line-height:1">
+      <span style="font-family:'Playfair Display',serif;font-weight:900;font-size:28px;color:#F5F0E8;letter-spacing:-.02em">puns</span><em style="font-family:'Playfair Display',serif;font-weight:700;font-size:28px;color:#C9A84C;font-style:italic;letter-spacing:-.01em">androsess</em>
+    </div>
+    <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">
+      <span style="font-family:'Space Mono',monospace;font-size:9px;color:#C9A84C;letter-spacing:.22em;text-transform:uppercase">Brand Guide</span>
+      <span style="color:rgba(201,168,76,0.3)">&middot;</span>
+      <span style="font-family:'Space Mono',monospace;font-size:9px;color:#6B6B5E;letter-spacing:.1em">Visual Identity &amp; Tool Standards</span>
+    </div>
+  </div>
+
+  <!-- ── OVERVIEW ── -->
+  <div class="card">
+    <span class="sec-label">Overview</span>
+    <div class="sec-title">Brand Identity</div>
+    <p><strong style="color:var(--gold)">punsandrosess</strong> is a personal brand for AI-powered marketing tools, built in public. Every tool ships as a single HTML file &mdash; no login, no setup, no data leaving the user's machine. The visual identity reflects that philosophy: precise, editorial, and unapologetically opinionated.</p>
+  </div>
+
+  <!-- ── TOOL HEADER REQUIREMENT ── -->
+  <div class="card">
+    <span class="sec-label">Required &mdash; Tool Header</span>
+    <div class="sec-title">Logo &amp; Tool Name</div>
+
+    <div class="requirement">
+      Every tool created under the punsandrosess brand <strong>must</strong> include the punsandrosess logo and the name of the tool in the header. This is non-negotiable. The logo anchors brand recognition; the tool name tells the user exactly where they are.
+    </div>
+
+    <p>The header pattern for every tool follows this structure:</p>
+    <ul>
+      <li><strong>Line 1 &mdash; Logo:</strong> The <strong style="color:var(--warm)">puns</strong><em style="color:var(--gold)">androsess</em> wordmark, rendered in Playfair Display. "puns" in warm white (<code>#F5F0E8</code>), bold 900 weight. "androsess" in gold (<code>#C9A84C</code>), italic 700 weight. No space between them.</li>
+      <li><strong>Line 2 &mdash; Context bar:</strong> A metadata line containing the category label (e.g., "Marketing"), fiscal year, tool description, and the <strong>tool name</strong> &mdash; separated by centered dots (<code>&middot;</code>).</li>
+    </ul>
+
+    <p>The tool name appears at the end of the context bar in Playfair Display at 13px, bold weight, with the second word in gold italic. For example:</p>
+
+    <!-- Live example -->
+    <div class="example-header">
+      <div style="display:flex;align-items:baseline;gap:0;margin-bottom:10px;line-height:1">
+        <span style="font-family:'Playfair Display',serif;font-weight:900;font-size:22px;color:#F5F0E8;letter-spacing:-.02em">puns</span><em style="font-family:'Playfair Display',serif;font-weight:700;font-size:22px;color:#C9A84C;font-style:italic;letter-spacing:-.01em">androsess</em>
+      </div>
+      <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">
+        <span style="font-family:'Space Mono',monospace;font-size:9px;color:#C9A84C;letter-spacing:.22em;text-transform:uppercase">Marketing &middot; FY2026</span>
+        <span style="color:rgba(201,168,76,0.3)">&middot;</span>
+        <span style="font-family:'Space Mono',monospace;font-size:9px;color:#6B6B5E;letter-spacing:.1em">Pipeline &amp; Demand Generation</span>
+        <span style="color:rgba(201,168,76,0.3)">&middot;</span>
+        <span style="font-family:'Playfair Display',serif;font-weight:700;font-size:13px;color:#F5F0E8;letter-spacing:-.01em">Mist <em style="color:#C9A84C;font-style:italic">Opportunities</em></span>
+      </div>
+    </div>
+
+    <p style="margin-top:14px;">The HTML for this header block:</p>
+    <div style="background:var(--void);border:1px solid var(--border);padding:14px 18px;margin:10px 0;font-family:'Space Mono',monospace;font-size:11px;line-height:1.8;color:var(--fog);overflow-x:auto;white-space:pre-wrap;">&lt;!-- punsandrosess logo --&gt;
+&lt;div style="display:flex;align-items:baseline;gap:0;margin-bottom:10px;line-height:1"&gt;
+  &lt;span style="font-family:'Playfair Display',serif;font-weight:900;font-size:22px;color:#F5F0E8;letter-spacing:-.02em"&gt;puns&lt;/span&gt;
+  &lt;em style="font-family:'Playfair Display',serif;font-weight:700;font-size:22px;color:#C9A84C;font-style:italic;letter-spacing:-.01em"&gt;androsess&lt;/em&gt;
+&lt;/div&gt;
+&lt;div style="display:flex;align-items:center;gap:8px"&gt;
+  &lt;span style="font-family:'Space Mono',monospace;font-size:9px;color:#C9A84C;letter-spacing:.22em;text-transform:uppercase"&gt;Category &amp;middot; FY20XX&lt;/span&gt;
+  &lt;span style="color:rgba(201,168,76,0.3)"&gt;&amp;middot;&lt;/span&gt;
+  &lt;span style="font-family:'Space Mono',monospace;font-size:9px;color:#6B6B5E;letter-spacing:.1em"&gt;Tool Description&lt;/span&gt;
+  &lt;span style="color:rgba(201,168,76,0.3)"&gt;&amp;middot;&lt;/span&gt;
+  &lt;span style="font-family:'Playfair Display',serif;font-weight:700;font-size:13px;color:#F5F0E8;letter-spacing:-.01em"&gt;Tool &lt;em style="color:#C9A84C;font-style:italic"&gt;Name&lt;/em&gt;&lt;/span&gt;
+&lt;/div&gt;</div>
+  </div>
+
+  <hr class="divider">
+
+  <!-- ── COLOR PALETTE ── -->
+  <div class="card">
+    <span class="sec-label">Color Palette</span>
+    <div class="sec-title">Colors</div>
+    <p>The palette is built around a dark, warm-neutral base with gold as the primary accent. Semantic colors (green, amber, red) are used only for status indicators.</p>
+
+    <div class="swatch-row">
+      <div class="swatch">
+        <div class="swatch-box" style="background:#141410;"></div>
+        <div class="swatch-label">Void</div>
+        <div class="swatch-hex">#141410</div>
+      </div>
+      <div class="swatch">
+        <div class="swatch-box" style="background:#1E1E18;"></div>
+        <div class="swatch-label">Card</div>
+        <div class="swatch-hex">#1E1E18</div>
+      </div>
+      <div class="swatch">
+        <div class="swatch-box" style="background:#C9A84C;"></div>
+        <div class="swatch-label">Gold</div>
+        <div class="swatch-hex">#C9A84C</div>
+      </div>
+      <div class="swatch">
+        <div class="swatch-box" style="background:#F5F0E8;"></div>
+        <div class="swatch-label">Warm</div>
+        <div class="swatch-hex">#F5F0E8</div>
+      </div>
+      <div class="swatch">
+        <div class="swatch-box" style="background:#6B6B5E;"></div>
+        <div class="swatch-label">Fog</div>
+        <div class="swatch-hex">#6B6B5E</div>
+      </div>
+    </div>
+
+    <div class="swatch-row">
+      <div class="swatch">
+        <div class="swatch-box" style="background:#1D9E75;"></div>
+        <div class="swatch-label">Green</div>
+        <div class="swatch-hex">#1D9E75</div>
+      </div>
+      <div class="swatch">
+        <div class="swatch-box" style="background:#C9893A;"></div>
+        <div class="swatch-label">Amber</div>
+        <div class="swatch-hex">#C9893A</div>
+      </div>
+      <div class="swatch">
+        <div class="swatch-box" style="background:#C0392B;"></div>
+        <div class="swatch-label">Red</div>
+        <div class="swatch-hex">#C0392B</div>
+      </div>
+    </div>
+
+    <table>
+      <tr><th>Token</th><th>Value</th><th>Usage</th></tr>
+      <tr><td><code>--void</code></td><td>#141410</td><td>Page background</td></tr>
+      <tr><td><code>--card</code></td><td>#1E1E18</td><td>Card / panel backgrounds</td></tr>
+      <tr><td><code>--gold</code></td><td>#C9A84C</td><td>Primary accent, borders, highlights, logo second half</td></tr>
+      <tr><td><code>--warm</code></td><td>#F5F0E8</td><td>Primary text, headings, logo first half</td></tr>
+      <tr><td><code>--fog</code></td><td>#6B6B5E</td><td>Secondary / muted text</td></tr>
+      <tr><td><code>--green</code></td><td>#1D9E75</td><td>Success / &ge;100% status</td></tr>
+      <tr><td><code>--amber</code></td><td>#C9893A</td><td>Warning / &ge;75% status</td></tr>
+      <tr><td><code>--red</code></td><td>#C0392B</td><td>Danger / &lt;75% status</td></tr>
+    </table>
+  </div>
+
+  <!-- ── TYPOGRAPHY ── -->
+  <div class="card">
+    <span class="sec-label">Typography</span>
+    <div class="sec-title">Typefaces</div>
+
+    <p>Three typefaces, each with a specific role:</p>
+
+    <table>
+      <tr><th>Typeface</th><th>Role</th><th>Weight</th><th>Usage</th></tr>
+      <tr><td style="font-family:'Playfair Display',serif;font-weight:900;color:var(--warm)">Playfair Display</td><td>Display / Editorial</td><td>700, 900, 400i, 700i</td><td>Logo, headings, hero numbers, tool names</td></tr>
+      <tr><td style="font-family:'Space Mono',monospace;font-weight:700;color:var(--warm)">Space Mono</td><td>UI / Labels</td><td>400, 700</td><td>Section labels, table headers, buttons, metadata</td></tr>
+      <tr><td style="font-family:'Source Serif 4',serif;font-style:italic;color:var(--warm)">Source Serif 4</td><td>Body / Prose</td><td>400, 600, 400i, 600i</td><td>Descriptions, notes, textarea content</td></tr>
+    </table>
+
+    <div class="font-sample">
+      <div style="font-family:'Playfair Display',serif;font-weight:900;font-size:32px;color:var(--warm);margin:10px 0;">Playfair Display &mdash; Headings</div>
+      <div style="font-family:'Space Mono',monospace;font-weight:700;font-size:9px;color:var(--gold);letter-spacing:.22em;text-transform:uppercase;margin:10px 0;">Space Mono &mdash; Section Labels</div>
+      <div style="font-family:'Source Serif 4',serif;font-style:italic;font-size:14px;color:var(--warm);margin:10px 0;">Source Serif 4 &mdash; Body copy and descriptive text</div>
+    </div>
+  </div>
+
+  <!-- ── CARD PATTERN ── -->
+  <div class="card">
+    <span class="sec-label">Components</span>
+    <div class="sec-title">Card Pattern</div>
+    <p>All content sections use the card component: dark background (<code>--card</code>), subtle border, gold left accent (3px), and corner filigree marks in gold at top-right and bottom-left.</p>
+    <ul>
+      <li>Padding: 18px 20px (desktop), 14px 12px (mobile)</li>
+      <li>Section labels: 9px Space Mono, gold, uppercase, .22em letter-spacing</li>
+      <li>The grid background uses 40px squares in faint gold on the page body</li>
+    </ul>
+  </div>
+
+  <!-- ── BACKGROUND PATTERN ── -->
+  <div class="card">
+    <span class="sec-label">Components</span>
+    <div class="sec-title">Background Grid</div>
+    <p>The page body uses a subtle grid pattern created with CSS gradients:</p>
+    <div style="background:var(--void);border:1px solid var(--border);padding:14px 18px;margin:10px 0;font-family:'Space Mono',monospace;font-size:11px;line-height:1.8;color:var(--fog);white-space:pre-wrap;">background-image:
+  linear-gradient(var(--gold-sub) 1px, transparent 1px),
+  linear-gradient(90deg, var(--gold-sub) 1px, transparent 1px);
+background-size: 40px 40px;</div>
+  </div>
+
+  <!-- ── STATUS COLORS ── -->
+  <div class="card">
+    <span class="sec-label">Patterns</span>
+    <div class="sec-title">Status Indicators</div>
+    <p>Use semantic colors consistently across all tools:</p>
+    <table>
+      <tr><th>Status</th><th>Color</th><th>Background</th><th>Meaning</th></tr>
+      <tr><td style="color:#1D9E75;font-family:'Space Mono',monospace;font-weight:700">Green</td><td>#1D9E75</td><td>rgba(29,158,117,0.12)</td><td>On target, &ge;100%, success</td></tr>
+      <tr><td style="color:#C9893A;font-family:'Space Mono',monospace;font-weight:700">Amber</td><td>#C9893A</td><td>rgba(201,137,58,0.12)</td><td>At risk, &ge;75%, warning</td></tr>
+      <tr><td style="color:#C0392B;font-family:'Space Mono',monospace;font-weight:700">Red</td><td>#C0392B</td><td>rgba(192,57,43,0.12)</td><td>Behind, &lt;75%, danger</td></tr>
+    </table>
+  </div>
+
+  <!-- ── TOOL CHECKLIST ── -->
+  <div class="card">
+    <span class="sec-label">Checklist</span>
+    <div class="sec-title">New Tool Requirements</div>
+    <p>Before shipping any new tool, verify the following:</p>
+    <ul>
+      <li><strong style="color:var(--gold)">Header:</strong> Includes the punsandrosess logo wordmark and the tool name in the context bar</li>
+      <li><strong style="color:var(--gold)">Fonts:</strong> Loads Playfair Display, Space Mono, and Source Serif 4 from Google Fonts</li>
+      <li><strong style="color:var(--gold)">Colors:</strong> Uses the standard CSS custom property palette defined in <code>:root</code></li>
+      <li><strong style="color:var(--gold)">Cards:</strong> Content sections use the card pattern with gold left border and corner filigrees</li>
+      <li><strong style="color:var(--gold)">Grid:</strong> Page background uses the 40px gold grid pattern</li>
+      <li><strong style="color:var(--gold)">Single file:</strong> Ships as one self-contained HTML file &mdash; no external dependencies beyond Google Fonts</li>
+      <li><strong style="color:var(--gold)">No login:</strong> No authentication, no data transmission, everything runs client-side</li>
+      <li><strong style="color:var(--gold)">Responsive:</strong> Works on mobile with appropriate breakpoints at 600px</li>
+    </ul>
+  </div>
+
+  <!-- ── FOOTER ── -->
+  <div style="text-align:center;padding:24px 0;margin-top:16px;">
+    <div style="display:flex;align-items:baseline;gap:0;justify-content:center;margin-bottom:8px;line-height:1">
+      <span style="font-family:'Playfair Display',serif;font-weight:900;font-size:16px;color:#F5F0E8;letter-spacing:-.02em">puns</span><em style="font-family:'Playfair Display',serif;font-weight:700;font-size:16px;color:#C9A84C;font-style:italic;letter-spacing:-.01em">androsess</em>
+    </div>
+    <span style="font-family:'Space Mono',monospace;font-size:9px;color:#6B6B5E;letter-spacing:.1em">AI tools for marketing leaders, built in public.</span>
+  </div>
+
+</div>

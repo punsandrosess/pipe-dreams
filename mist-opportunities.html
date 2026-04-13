@@ -3,12 +3,33 @@
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,900;1,400;1,700&family=Space+Mono:wght@400;700&family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,600;1,8..60,400;1,8..60,600&display=swap" rel="stylesheet">
 <style>
 :root{
-  --void:#141410;--card:#1E1E18;--gold:#C9A84C;--gold-dim:rgba(201,168,76,0.3);
-  --gold-sub:rgba(201,168,76,0.08);--warm:#F5F0E8;--fog:#6B6B5E;--border:rgba(245,240,232,0.07);
+  --void:#1C2118;--card:#1E2A1A;--gold:#6B8F52;--gold-dim:rgba(107,143,82,0.3);
+  --gold-sub:rgba(107,143,82,0.08);--warm:#E8EDE4;--fog:#8FAF6A;--border:rgba(232,237,228,0.07);
   --green:#1D9E75;--green-bg:rgba(29,158,117,0.12);
   --amber:#C9893A;--amber-bg:rgba(201,137,58,0.12);
   --red:#C0392B;--red-bg:rgba(192,57,43,0.12);
-  --gold-accent-bg:rgba(201,168,76,0.1);--gold-accent-border:rgba(201,168,76,0.25);
+  --gold-accent-bg:rgba(107,143,82,0.1);--gold-accent-border:rgba(107,143,82,0.25);
+}
+body.light {
+  --void: #F2F5EE;
+  --card: #FFFFFF;
+  --gold: #3D5C2E;
+  --gold-dim: rgba(61,92,46,0.3);
+  --gold-sub: rgba(61,92,46,0.08);
+  --warm: #1C2118;
+  --fog: #5A7A44;
+  --border: rgba(28,33,24,0.08);
+  --green: #1D9E75;
+  --green-bg: rgba(29,158,117,0.10);
+  --amber: #C9893A;
+  --amber-bg: rgba(201,137,58,0.10);
+  --red: #C0392B;
+  --red-bg: rgba(192,57,43,0.10);
+  --gold-accent-bg: rgba(61,92,46,0.08);
+  --gold-accent-border: rgba(61,92,46,0.20);
+  background: #F2F5EE;
+  color: #1C2118;
+  background-image: linear-gradient(rgba(61,92,46,0.06) 1px, transparent 1px), linear-gradient(90deg, rgba(61,92,46,0.06) 1px, transparent 1px);
 }
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
 html{scroll-behavior:smooth;}
@@ -56,6 +77,23 @@ td{padding:6px 8px;text-align:center;border-bottom:1px solid var(--border);}
 .flash{font-family:'Space Mono',monospace;font-size:9px;color:var(--green);letter-spacing:.12em;opacity:0;transition:opacity .3s;display:inline-block;}
 .flash.show{opacity:1;}
 
+.theme-toggle{
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  width:36px;
+  height:36px;
+  border:1px solid var(--border);
+  background:var(--card);
+  color:var(--fog);
+  cursor:pointer;
+  transition:all 0.2s;
+}
+.theme-toggle:hover{
+  border-color:var(--gold-dim);
+  color:var(--gold);
+}
+
 textarea{
   outline:none;border:1px solid var(--border);padding:8px 12px;
   font-family:'Source Serif 4',serif;font-style:italic;font-size:13px;
@@ -90,6 +128,16 @@ textarea::placeholder{color:var(--fog);}
   .mob-kpi-grid{grid-template-columns:1fr 1fr!important;}
   .mob-hero-stats{flex-direction:column!important;gap:8px!important;}
 }
+@media print {
+  * { color-adjust: exact; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  body { background: white !important; background-image: none !important; color: #1C2118 !important; padding: 10px !important; }
+  .no-print, .mob-lock-pill, .mob-legend { display: none !important; }
+  .card { background: white !important; border: 1px solid #D4DDD0 !important; }
+  .card::before, .card::after { display: none !important; }
+  table { font-size: 10px !important; }
+  th, td { padding: 4px 6px !important; }
+  h1, h2, h3 { page-break-after: avoid; }
+}
 </style>
 
 <div id="app">
@@ -100,18 +148,37 @@ textarea::placeholder{color:var(--fog);}
 <div id="modal-root"></div>
 
 <script>
-const B={
-  ink:"#F5F0E8",cream:"#1E1E18",fog:"#141410",mist:"rgba(245,240,232,0.07)",stone:"#6B6B5E",
-  mid:"#6B6B5E",orange:"#C9A84C",teal:"#1D9E75",tealBg:"rgba(29,158,117,0.12)",
+const B_DARK={
+  ink:"#E8EDE4",cream:"#1E2A1A",fog:"#8FAF6A",mist:"rgba(232,237,228,0.07)",stone:"#8FAF6A",
+  mid:"#8FAF6A",orange:"#6B8F52",teal:"#1D9E75",tealBg:"rgba(29,158,117,0.12)",
   amber:"#C9893A",amberBg:"rgba(201,137,58,0.12)",red:"#C0392B",redBg:"rgba(192,57,43,0.12)",
-  navy:"#C9A84C",white:"#1E1E18",
-  // New semantic refs
-  gold:"#C9A84C",goldDim:"rgba(201,168,76,0.3)",goldSub:"rgba(201,168,76,0.08)",
-  warm:"#F5F0E8",void:"#141410",card:"#1E1E18",border:"rgba(245,240,232,0.07)",
+  navy:"#6B8F52",white:"#1E2A1A",
+  gold:"#6B8F52",goldDim:"rgba(107,143,82,0.3)",goldSub:"rgba(107,143,82,0.08)",
+  goldFaint:"rgba(107,143,82,0.06)",goldTint:"rgba(107,143,82,0.1)",goldAccentBorder:"rgba(107,143,82,0.25)",
+  goldMed:"rgba(107,143,82,0.4)",goldHalf:"rgba(107,143,82,0.5)",goldStrong:"rgba(107,143,82,0.6)",
+  warm:"#E8EDE4",void:"#1C2118",card:"#1E2A1A",border:"rgba(232,237,228,0.07)",
+  warmFaint:"rgba(232,237,228,0.02)",borderLight:"rgba(232,237,228,0.12)",
   green:"#1D9E75",greenBg:"rgba(29,158,117,0.12)",
   realAmber:"#C9893A",realAmberBg:"rgba(201,137,58,0.12)",
   realRed:"#C0392B",realRedBg:"rgba(192,57,43,0.12)",
 };
+
+const B_LIGHT={
+  ink:"#1C2118",cream:"#FFFFFF",fog:"#5A7A44",mist:"rgba(28,33,24,0.08)",stone:"#5A7A44",
+  mid:"#5A7A44",orange:"#3D5C2E",teal:"#1D9E75",tealBg:"rgba(29,158,117,0.10)",
+  amber:"#C9893A",amberBg:"rgba(201,137,58,0.10)",red:"#C0392B",redBg:"rgba(192,57,43,0.10)",
+  navy:"#3D5C2E",white:"#FFFFFF",
+  gold:"#3D5C2E",goldDim:"rgba(61,92,46,0.3)",goldSub:"rgba(61,92,46,0.06)",
+  goldFaint:"rgba(61,92,46,0.04)",goldTint:"rgba(61,92,46,0.08)",goldAccentBorder:"rgba(61,92,46,0.20)",
+  goldMed:"rgba(61,92,46,0.35)",goldHalf:"rgba(61,92,46,0.45)",goldStrong:"rgba(61,92,46,0.5)",
+  warm:"#1C2118",void:"#F2F5EE",card:"#FFFFFF",border:"rgba(28,33,24,0.08)",
+  warmFaint:"rgba(28,33,24,0.02)",borderLight:"rgba(28,33,24,0.12)",
+  green:"#1D9E75",greenBg:"rgba(29,158,117,0.10)",
+  realAmber:"#C9893A",realAmberBg:"rgba(201,137,58,0.10)",
+  realRed:"#C0392B",realRedBg:"rgba(192,57,43,0.10)",
+};
+
+let B={...B_DARK};
 
 // For pct coloring use real colors
 const pctColorReal=(a,g)=>{if(!g)return B.stone;const r=a/g;return r>=1?B.green:r>=.75?B.realAmber:B.realRed};
@@ -154,11 +221,38 @@ let state={
   asp:30000,convRate:20,revGoal:10000000,revActual:0,mktgPct:45,
   actuals:clone(INIT_ACTUALS),actDollar:initDollar(),
   manualGoals:null,goalsLocked:false,lockedAt:null,
-  changeLog:[],tab:"opps",editCell:null,modal:null,loaded:false
+  changeLog:[],tab:"opps",editCell:null,modal:null,loaded:false,printing:false
 };
 let flashTimer=null;
 
+const sunSVG=`<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>`;
+const moonSVG=`<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>`;
+const pdfSVG=`<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>`;
+
+function toggleTheme(){
+  const isLight=document.body.classList.toggle('light');
+  B=isLight?{...B_LIGHT}:{...B_DARK};
+  try{localStorage.setItem('cantina_theme',isLight?'light':'dark');}catch(e){}
+  render();
+}
+
+function printAll(){
+  state.printing=true;
+  render();
+  requestAnimationFrame(()=>{
+    window.print();
+    state.printing=false;
+    render();
+  });
+}
+
 async function loadFromStorage(){
+  try{
+    if(localStorage.getItem('cantina_theme')==='light'){
+      document.body.classList.add('light');
+      B={...B_LIGHT};
+    }
+  }catch(e){}
   try{
     const results=await Promise.all(Object.values(SK).map(k=>window.storage.get(k,true).catch(()=>null)));
     const [ra,rd,rr,rl,rg,rlog]=results;
@@ -233,14 +327,14 @@ function renderModal(){
   if(m.mode==="relock"){
     const edits=m.edits||[];
     const editSummary=edits.length===0
-      ?`<div style="font-family:'Source Serif 4',serif;font-style:italic;font-size:13px;color:#6B6B5E;padding:12px 14px;background:#141410;border:1px solid rgba(245,240,232,0.07)">No goal changes were made during this session.</div>`
+      ?`<div style="font-family:'Source Serif 4',serif;font-style:italic;font-size:13px;color:${B.fog};padding:12px 14px;background:${B.void};border:1px solid ${B.border}">No goal changes were made during this session.</div>`
       :`<div style="display:flex;flex-direction:column;gap:4px;max-height:180px;overflow-y:auto;">
           ${edits.map(e=>{
-            const dirColor=e.dir==="increased"?"#1D9E75":"#C0392B";
+            const dirColor=e.dir==="increased"?B.green:B.red;
             const arrow=e.dir==="increased"?"↑":"↓";
-            return`<div style="background:#141410;border:1px solid rgba(245,240,232,0.07);border-left:2px solid ${dirColor};padding:8px 12px;display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap">
-              <span style="font-family:'Space Mono',monospace;font-size:10px;color:#F5F0E8"><span style="color:${dirColor}">${arrow}</span> ${e.desc}</span>
-              <span style="font-family:'Space Mono',monospace;font-size:9px;color:#6B6B5E;white-space:nowrap">${e.ts}</span>
+            return`<div style="background:${B.void};border:1px solid ${B.border};border-left:2px solid ${dirColor};padding:8px 12px;display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap">
+              <span style="font-family:'Space Mono',monospace;font-size:10px;color:${B.warm}"><span style="color:${dirColor}">${arrow}</span> ${e.desc}</span>
+              <span style="font-family:'Space Mono',monospace;font-size:9px;color:${B.fog};white-space:nowrap">${e.ts}</span>
             </div>`;
           }).join("")}
         </div>`;
@@ -249,18 +343,18 @@ function renderModal(){
     <div class="overlay" id="overlay">
       <div class="modal">
         <div style="margin-bottom:12px">
-          <span style="font-family:'Space Mono',monospace;font-size:9px;color:#C9A84C;letter-spacing:.22em;text-transform:uppercase">Lock Goals</span>
+          <span style="font-family:'Space Mono',monospace;font-size:9px;color:${B.gold};letter-spacing:.22em;text-transform:uppercase">Lock Goals</span>
         </div>
-        <div style="font-family:'Space Mono',monospace;font-size:9px;color:#6B6B5E;letter-spacing:.12em;text-transform:uppercase;margin-bottom:8px">${edits.length} change${edits.length!==1?"s":""} made this session</div>
+        <div style="font-family:'Space Mono',monospace;font-size:9px;color:${B.fog};letter-spacing:.12em;text-transform:uppercase;margin-bottom:8px">${edits.length} change${edits.length!==1?"s":""} made this session</div>
         <div style="margin-bottom:18px">${editSummary}</div>
         <div style="margin-bottom:22px">
-          <div style="font-family:'Space Mono',monospace;font-size:9px;color:#6B6B5E;letter-spacing:.14em;text-transform:uppercase;margin-bottom:8px">Sign-off note <span style="color:#C0392B">*</span></div>
-          <textarea id="modal-note" placeholder="e.g. All changes reviewed and approved. Locking for board review." style="background:#141410;border:1px solid rgba(245,240,232,0.07);"></textarea>
-          <div id="modal-note-err" style="font-family:'Space Mono',monospace;font-size:10px;color:#C0392B;margin-top:4px;display:none">A sign-off note is required to lock.</div>
+          <div style="font-family:'Space Mono',monospace;font-size:9px;color:${B.fog};letter-spacing:.14em;text-transform:uppercase;margin-bottom:8px">Sign-off note <span style="color:${B.red}">*</span></div>
+          <textarea id="modal-note" placeholder="e.g. All changes reviewed and approved. Locking for board review." style="background:${B.void};border:1px solid ${B.border};"></textarea>
+          <div id="modal-note-err" style="font-family:'Space Mono',monospace;font-size:10px;color:${B.red};margin-top:4px;display:none">A sign-off note is required to lock.</div>
         </div>
         <div style="display:flex;gap:10px;justify-content:flex-end">
-          <button id="modal-cancel" style="padding:8px 18px;background:transparent;border:1px solid rgba(245,240,232,0.12);color:#6B6B5E;letter-spacing:.08em">Cancel</button>
-          <button id="modal-confirm" style="padding:8px 20px;background:#C9A84C;color:#141410;font-weight:700;letter-spacing:.08em">Lock &amp; Sign Off</button>
+          <button id="modal-cancel" style="padding:8px 18px;background:transparent;border:1px solid ${B.borderLight};color:${B.fog};letter-spacing:.08em">Cancel</button>
+          <button id="modal-confirm" style="padding:8px 20px;background:${B.gold};color:${B.void};font-weight:700;letter-spacing:.08em">Lock &amp; Sign Off</button>
         </div>
       </div>
     </div>`;
@@ -293,25 +387,25 @@ function renderModal(){
   <div class="overlay" id="overlay">
     <div class="modal">
       <div style="margin-bottom:16px">
-        <span style="font-family:'Space Mono',monospace;font-size:9px;color:#C9A84C;letter-spacing:.22em;text-transform:uppercase">Edit Goal</span>
+        <span style="font-family:'Space Mono',monospace;font-size:9px;color:${B.gold};letter-spacing:.22em;text-transform:uppercase">Edit Goal</span>
       </div>
-      <div style="font-family:'Playfair Display',serif;font-size:18px;font-weight:700;color:#F5F0E8;margin-bottom:4px">${m.ch}</div>
-      <div style="font-family:'Space Mono',monospace;font-size:10px;color:#6B6B5E;margin-bottom:20px;letter-spacing:.06em">${QUARTERS[m.qi]} · ${typeLabel}</div>
+      <div style="font-family:'Playfair Display',serif;font-size:18px;font-weight:700;color:${B.warm};margin-bottom:4px">${m.ch}</div>
+      <div style="font-family:'Space Mono',monospace;font-size:10px;color:${B.fog};margin-bottom:20px;letter-spacing:.06em">${QUARTERS[m.qi]} · ${typeLabel}</div>
 
       <div style="margin-bottom:16px">
-        <div style="font-family:'Space Mono',monospace;font-size:9px;color:#6B6B5E;letter-spacing:.14em;text-transform:uppercase;margin-bottom:8px">New value <span style="color:#C0392B">*</span></div>
+        <div style="font-family:'Space Mono',monospace;font-size:9px;color:${B.fog};letter-spacing:.14em;text-transform:uppercase;margin-bottom:8px">New value <span style="color:${B.red}">*</span></div>
         <div style="display:flex;align-items:center;gap:12px">
-          <span style="font-family:'Space Mono',monospace;font-size:13px;color:#6B6B5E;text-decoration:line-through">${displayCur}</span>
-          <span style="color:#6B6B5E">→</span>
-          <input type="text" id="modal-newval" placeholder="${m.isDollar?"e.g. 450000":"e.g. 18"}" style="flex:1;font-size:14px;padding:8px 12px;background:#141410;border:1px solid rgba(201,168,76,0.3);color:#F5F0E8;font-family:'Space Mono',monospace;font-weight:700;" />
+          <span style="font-family:'Space Mono',monospace;font-size:13px;color:${B.fog};text-decoration:line-through">${displayCur}</span>
+          <span style="color:${B.fog}">→</span>
+          <input type="text" id="modal-newval" placeholder="${m.isDollar?"e.g. 450000":"e.g. 18"}" style="flex:1;font-size:14px;padding:8px 12px;background:${B.void};border:1px solid ${B.goldDim};color:${B.warm};font-family:'Space Mono',monospace;font-weight:700;" />
         </div>
-        <div id="modal-preview" style="font-family:'Space Mono',monospace;font-size:10px;color:#6B6B5E;margin-top:8px;min-height:18px;letter-spacing:.06em"></div>
-        <div id="modal-val-err" style="font-family:'Space Mono',monospace;font-size:10px;color:#C0392B;margin-top:4px;display:none">Please enter a valid number.</div>
+        <div id="modal-preview" style="font-family:'Space Mono',monospace;font-size:10px;color:${B.fog};margin-top:8px;min-height:18px;letter-spacing:.06em"></div>
+        <div id="modal-val-err" style="font-family:'Space Mono',monospace;font-size:10px;color:${B.red};margin-top:4px;display:none">Please enter a valid number.</div>
       </div>
 
       <div style="display:flex;gap:10px;justify-content:flex-end">
-        <button id="modal-cancel" style="padding:8px 18px;background:transparent;border:1px solid rgba(245,240,232,0.12);color:#6B6B5E;letter-spacing:.08em">Cancel</button>
-        <button id="modal-confirm" style="padding:8px 20px;background:#C9A84C;color:#141410;font-weight:700;letter-spacing:.08em">Save</button>
+        <button id="modal-cancel" style="padding:8px 18px;background:transparent;border:1px solid ${B.borderLight};color:${B.fog};letter-spacing:.08em">Cancel</button>
+        <button id="modal-confirm" style="padding:8px 20px;background:${B.gold};color:${B.void};font-weight:700;letter-spacing:.08em">Save</button>
       </div>
     </div>
   </div>`;
@@ -329,7 +423,7 @@ function renderModal(){
     const from=m.isDollar?fmt$(m.currentVal):fmtN(m.currentVal);
     const to=m.isDollar?fmt$(v):fmtN(v);
     const dir=v>m.currentVal?"Increased":v<m.currentVal?"Decreased":"No change";
-    const dirColor=v>m.currentVal?"#1D9E75":v<m.currentVal?"#C0392B":"#6B6B5E";
+    const dirColor=v>m.currentVal?B.green:v<m.currentVal?B.red:B.fog;
     preview.innerHTML=`<span style="color:${dirColor}">${dir}:</span> ${from} → <span style="color:${dirColor};font-weight:700">${to}</span>`;
   });
 
@@ -371,13 +465,13 @@ function goalCell(val,ch,qi,isDollar){
   const locked=state.goalsLocked;
   const display=isDollar?fmt$(val):fmtN(val);
   const hint=locked?"Click to edit (reason required)":"Click to edit goal";
-  return`<td style="padding:4px 6px;text-align:center;background:rgba(201,168,76,0.06)">
+  return`<td style="padding:4px 6px;text-align:center;background:${B.goldSub}">
     <span data-goal-click="1" data-ch="${ch}" data-qi="${qi}" data-dollar="${isDollar?1:0}" data-val="${val}"
       title="${hint}"
       style="cursor:pointer;padding:2px 8px;display:inline-flex;align-items:center;gap:4px;min-width:${isDollar?60:36}px;
-        background:rgba(201,168,76,0.1);border:1px solid rgba(201,168,76,${locked?'0.5':'0.25'});
-        font-size:${isDollar?10:11}px;color:#C9A84C;font-weight:700;font-family:'Space Mono',monospace;white-space:nowrap">
-      ${locked?`<svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="#C9A84C" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>`:""}
+        background:${B.goldTint};border:1px solid ${locked?`${B.goldDim}`:`${B.goldAccentBorder}`};
+        font-size:${isDollar?10:11}px;color:${B.gold};font-weight:700;font-family:'Space Mono',monospace;white-space:nowrap">
+      ${locked?`<svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="${B.gold}" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>`:""}
       ${display}
     </span>
   </td>`;
@@ -391,12 +485,12 @@ function actualCell(val,ch,qi,isDollar){
     return`<td style="padding:4px 6px;text-align:center">
       <input type="text" id="${cellId}-input" value="${val}"
         data-ch="${ch}" data-qi="${qi}" data-dollar="${isDollar?1:0}" data-cell="${cellId}"
-        style="width:${isDollar?80:52}px;text-align:center;border:1px solid #1D9E75;padding:2px 6px;font-size:${isDollar?10:11}px;font-family:'Space Mono',monospace;font-weight:700;color:#F5F0E8;outline:none;background:#141410;" />
+        style="width:${isDollar?80:52}px;text-align:center;border:1px solid ${B.green};padding:2px 6px;font-size:${isDollar?10:11}px;font-family:'Space Mono',monospace;font-weight:700;color:${B.warm};outline:none;background:${B.void};" />
     </td>`;
   }
   return`<td style="padding:4px 6px;text-align:center">
     <span data-edit="${cellId}" data-ch="${ch}" data-qi="${qi}" data-dollar="${isDollar?1:0}"
-      style="cursor:pointer;padding:2px 8px;display:inline-block;min-width:${isDollar?60:36}px;background:rgba(29,158,117,0.1);border:1px solid rgba(29,158,117,0.3);font-size:${isDollar?10:11}px;color:#1D9E75;font-weight:700;font-family:'Space Mono',monospace">
+      style="cursor:pointer;padding:2px 8px;display:inline-block;min-width:${isDollar?60:36}px;background:${B.greenBg};border:1px solid rgba(29,158,117,0.3);font-size:${isDollar?10:11}px;color:${B.green};font-weight:700;font-family:'Space Mono',monospace">
       ${display}
     </span>
   </td>`;
@@ -405,16 +499,17 @@ function actualCell(val,ch,qi,isDollar){
 function refInput(label,val,key,prefix,suffix,w=100){
   const lk=state.goalsLocked;
   return`<div style="display:flex;flex-direction:column;gap:5px">
-    <span style="font-family:'Space Mono',monospace;font-weight:700;font-size:9px;color:${lk?'#6B6B5E':'#C9A84C'};letter-spacing:.14em;text-transform:uppercase">${label}</span>
+    <span style="font-family:'Space Mono',monospace;font-weight:700;font-size:9px;color:${lk?B.fog:B.gold};letter-spacing:.14em;text-transform:uppercase">${label}</span>
     <div style="display:flex;align-items:center;gap:4px">
-      ${prefix?`<span style="font-family:'Space Mono',monospace;font-weight:700;color:${lk?'#6B6B5E':'#6B6B5E'};font-size:12px">${prefix}</span>`:""}
-      <input type="text" data-refkey="${key}" value="${fmtN(val)}" style="width:${w}px;${lk?'':'border-color:rgba(201,168,76,0.3);'}" class="${lk?'locked-ref':''}" ${lk?'readonly':''} />
-      ${suffix?`<span style="font-family:'Space Mono',monospace;font-weight:700;color:#6B6B5E;font-size:12px">${suffix}</span>`:""}
+      ${prefix?`<span style="font-family:'Space Mono',monospace;font-weight:700;color:${B.fog};font-size:12px">${prefix}</span>`:""}
+      <input type="text" data-refkey="${key}" value="${fmtN(val)}" style="width:${w}px;${lk?'':
+`border-color:${B.goldDim};`}" class="${lk?'locked-ref':''}" ${lk?'readonly':''} />
+      ${suffix?`<span style="font-family:'Space Mono',monospace;font-weight:700;color:${B.fog};font-size:12px">${suffix}</span>`:""}
     </div>
   </div>`;
 }
 
-const lockSVG=(color,open=false)=>`<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="${color}" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/>${open?'<line x1="8" y1="15" x2="16" y2="15"/>':''}</svg>`;
+const lockSVG=(color,open=false)=>`<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="${color||B.gold}" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/>${open?'<line x1="8" y1="15" x2="16" y2="15"/>':''}</svg>`;
 
 // ── Main render ─────────────────────────────────────────────────────
 function render(){
@@ -422,9 +517,9 @@ function render(){
   const g=getGoals();
   const dt=deriveTotals();
   const locked=state.goalsLocked;
-  const GoalC="#C9A84C";
+  const GoalC="#6B8F52";
   const ActC="#1D9E75";
-  const rowBg=i=>i%2===0?"#1E1E18":"rgba(245,240,232,0.02)";
+  const rowBg=i=>i%2===0?"#1E2A1A":"rgba(232,237,228,0.02)";
 
   const kpis=QUARTERS.map((q,qi)=>({
     q,gO:sumCol(g.goals,qi),aO:sumCol(state.actuals,qi),
@@ -442,59 +537,61 @@ function render(){
 
   let html=`
   <!-- ── HEADER ── -->
-  <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:28px;padding-bottom:24px;border-bottom:1px solid rgba(201,168,76,0.2);flex-wrap:wrap;gap:12px;position:relative;" class="mob-header">
-    <div style="position:absolute;bottom:0;left:0;right:0;height:2px;background:linear-gradient(90deg,#C9A84C,transparent);opacity:.3;"></div>
+  <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:28px;padding-bottom:24px;border-bottom:1px solid ${B.goldHalf};flex-wrap:wrap;gap:12px;position:relative;" class="mob-header">
+    <div style="position:absolute;bottom:0;left:0;right:0;height:2px;background:linear-gradient(90deg,${B.gold},transparent);opacity:.3;"></div>
     <div>
       <!-- punsandrosess logo -->
       <div style="display:flex;align-items:baseline;gap:0;margin-bottom:10px;line-height:1">
-        <span style="font-family:'Playfair Display',serif;font-weight:900;font-size:22px;color:#F5F0E8;letter-spacing:-.02em">puns</span><em style="font-family:'Playfair Display',serif;font-weight:700;font-size:22px;color:#C9A84C;font-style:italic;letter-spacing:-.01em">androsess</em>
+        <span style="font-family:'Playfair Display',serif;font-weight:900;font-size:22px;color:${B.warm};letter-spacing:-.02em">puns</span><em style="font-family:'Playfair Display',serif;font-weight:700;font-size:22px;color:${B.gold};font-style:italic;letter-spacing:-.01em">androsess</em>
       </div>
       <div style="display:flex;align-items:center;gap:8px">
-        <span style="font-family:'Space Mono',monospace;font-size:9px;color:#C9A84C;letter-spacing:.22em;text-transform:uppercase">Marketing · FY2026</span>
-        <span style="color:rgba(201,168,76,0.3)">·</span>
-        <span style="font-family:'Space Mono',monospace;font-size:9px;color:#6B6B5E;letter-spacing:.1em">Pipeline &amp; Demand Generation</span>
-        <span style="color:rgba(201,168,76,0.3)">·</span>
-        <span style="font-family:'Playfair Display',serif;font-weight:700;font-size:13px;color:#F5F0E8;letter-spacing:-.01em">Mist <em style="color:#C9A84C;font-style:italic">Opportunities</em></span>
+        <span style="font-family:'Space Mono',monospace;font-size:9px;color:${B.gold};letter-spacing:.22em;text-transform:uppercase">Marketing · FY2026</span>
+        <span style="color:${B.goldDim}">·</span>
+        <span style="font-family:'Space Mono',monospace;font-size:9px;color:${B.fog};letter-spacing:.1em">Pipeline &amp; Demand Generation</span>
+        <span style="color:${B.goldDim}">·</span>
+        <span style="font-family:'Playfair Display',serif;font-weight:700;font-size:13px;color:${B.warm};letter-spacing:-.01em">Mist <em style="color:${B.gold};font-style:italic">Opportunities</em></span>
       </div>
     </div>
     <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap" class="mob-header-right">
+      <button class="theme-toggle" onclick="toggleTheme()" title="Toggle light/dark mode">${document.body.classList.contains('light')?moonSVG:sunSVG}</button>
+      <button class="theme-toggle no-print" onclick="printAll()" title="Export PDF" style="gap:4px;width:auto;padding:0 12px;display:flex;align-items:center;justify-content:center">${pdfSVG} <span style="font-size:9px;letter-spacing:.1em;margin-left:4px">PDF</span></button>
       <span id="save-flash" class="flash">✓ SAVED</span>
       ${locked
-        ?`<div style="display:flex;align-items:center;gap:8px;background:rgba(201,168,76,0.08);border:1px solid rgba(201,168,76,0.3);padding:6px 12px;color:#C9A84C" class="mob-lock-pill">
-            ${lockSVG("#C9A84C")}
+        ?`<div style="display:flex;align-items:center;gap:8px;background:${B.goldTint};border:1px solid ${B.goldDim};padding:6px 12px;color:${B.gold}" class="mob-lock-pill">
+            ${lockSVG(B.gold)}
             <span style="font-family:'Space Mono',monospace;font-size:9px;letter-spacing:.1em">Locked ${state.lockedAt||""}</span>
-            <button id="btn-unlock" style="background:#C9A84C;color:#141410;padding:3px 12px;font-size:9px;margin-left:2px;letter-spacing:.1em">Unlock</button>
+            <button id="btn-unlock" style="background:${B.gold};color:${B.void};padding:3px 12px;font-size:9px;margin-left:2px;letter-spacing:.1em">Unlock</button>
           </div>`
-        :`<div style="display:flex;align-items:center;gap:8px;background:rgba(29,158,117,0.08);border:1px solid rgba(29,158,117,0.3);padding:6px 12px" class="mob-lock-pill">
-            ${lockSVG("#1D9E75",true)}
-            <span style="font-family:'Space Mono',monospace;font-size:9px;color:#1D9E75;letter-spacing:.1em">Unlocked — click any goal to edit</span>
-            <button id="btn-lock" style="background:#1D9E75;color:#141410;padding:3px 12px;font-size:9px;margin-left:2px;letter-spacing:.1em">Lock Goals</button>
+        :`<div style="display:flex;align-items:center;gap:8px;background:${B.greenBg};border:1px solid rgba(29,158,117,0.3);padding:6px 12px" class="mob-lock-pill">
+            ${lockSVG(B.green,true)}
+            <span style="font-family:'Space Mono',monospace;font-size:9px;color:${B.green};letter-spacing:.1em">Unlocked — click any goal to edit</span>
+            <button id="btn-lock" style="background:${B.green};color:${B.void};padding:3px 12px;font-size:9px;margin-left:2px;letter-spacing:.1em">Lock Goals</button>
           </div>`
       }
       <div style="display:flex;gap:12px;flex-wrap:wrap" class="mob-legend">
-        ${[{l:"Goal",c:GoalC},{l:"Actual",c:ActC},{l:"≥100%",c:"#1D9E75"},{l:"≥75%",c:"#C9893A"},{l:"<75%",c:"#C0392B"}].map(x=>`<div style="display:flex;align-items:center;gap:5px"><div style="width:6px;height:6px;background:${x.c}"></div><span style="font-family:'Space Mono',monospace;font-size:9px;color:#6B6B5E;letter-spacing:.1em">${x.l}</span></div>`).join("")}
+        ${[{l:"Goal",c:GoalC},{l:"Actual",c:ActC},{l:"≥100%",c:B.green},{l:"≥75%",c:B.realAmber},{l:"<75%",c:B.realRed}].map(x=>`<div style="display:flex;align-items:center;gap:5px"><div style="width:6px;height:6px;background:${x.c}"></div><span style="font-family:'Space Mono',monospace;font-size:9px;color:${B.fog};letter-spacing:.1em">${x.l}</span></div>`).join("")}
       </div>
     </div>
   </div>
 
   <!-- ── HERO BANNER ── -->
-  <div style="background:var(--card);border:1px solid rgba(201,168,76,0.3);border-left:3px solid #C9A84C;padding:28px 32px;margin-bottom:20px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:20px;position:relative;overflow:hidden;">
-    <div style="position:absolute;right:-10px;bottom:-10px;font-family:'Playfair Display',serif;font-size:130px;font-weight:900;color:rgba(201,168,76,0.04);line-height:1;user-select:none;pointer-events:none;">P</div>
-    <div style="position:absolute;top:8px;right:8px;width:14px;height:14px;border-top:1px solid rgba(201,168,76,0.4);border-right:1px solid rgba(201,168,76,0.4);"></div>
-    <div style="position:absolute;bottom:8px;left:32px;width:14px;height:14px;border-bottom:1px solid rgba(201,168,76,0.4);border-left:1px solid rgba(201,168,76,0.4);"></div>
+  <div style="background:var(--card);border:1px solid ${B.goldDim};border-left:3px solid ${B.gold};padding:28px 32px;margin-bottom:20px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:20px;position:relative;overflow:hidden;">
+    <div style="position:absolute;right:-10px;bottom:-10px;font-family:'Playfair Display',serif;font-size:130px;font-weight:900;color:${B.goldFaint};line-height:1;user-select:none;pointer-events:none;">P</div>
+    <div style="position:absolute;top:8px;right:8px;width:14px;height:14px;border-top:1px solid ${B.goldMed};border-right:1px solid ${B.goldMed};"></div>
+    <div style="position:absolute;bottom:8px;left:32px;width:14px;height:14px;border-bottom:1px solid ${B.goldMed};border-left:1px solid ${B.goldMed};"></div>
     <div>
-      <div style="font-family:'Space Mono',monospace;font-size:9px;color:rgba(201,168,76,0.6);letter-spacing:.22em;text-transform:uppercase;margin-bottom:8px">Marketing Pipeline Goal</div>
-      <div style="font-family:'Playfair Display',serif;font-size:40px;font-weight:900;color:#F5F0E8;letter-spacing:-.02em;line-height:1">${fmtM(dt.mktgGoal).replace('$','').replace('M','')}<em style="color:#C9A84C;font-style:italic">M</em></div>
-      <div style="font-family:'Space Mono',monospace;color:#6B6B5E;font-size:10px;margin-top:6px;letter-spacing:.06em">${state.mktgPct}% of ${fmtM(dt.totalPipe)} required · ${fmt$(state.revGoal)} ÷ ${state.convRate}% conv.</div>
+      <div style="font-family:'Space Mono',monospace;font-size:9px;color:${B.goldMed};letter-spacing:.22em;text-transform:uppercase;margin-bottom:8px">Marketing Pipeline Goal</div>
+      <div style="font-family:'Playfair Display',serif;font-size:40px;font-weight:900;color:${B.warm};letter-spacing:-.02em;line-height:1">${fmtM(dt.mktgGoal).replace('$','').replace('M','')}<em style="color:${B.gold};font-style:italic">M</em></div>
+      <div style="font-family:'Space Mono',monospace;color:${B.fog};font-size:10px;margin-top:6px;letter-spacing:.06em">${state.mktgPct}% of ${fmtM(dt.totalPipe)} required · ${fmt$(state.revGoal)} ÷ ${state.convRate}% conv.</div>
     </div>
     <div style="display:flex;gap:32px;flex-wrap:wrap" class="mob-hero-stats">
       ${[{l:"Actual Pipeline",v:fmtM(dt.totalActPipe)},{l:"% to Goal",v:fmtPct(dt.totalActPipe,dt.mktgGoal)},{l:"Remaining",v:fmtM(dt.remaining)}].map(k=>`
         <div style="text-align:center">
-          <div style="font-family:'Space Mono',monospace;color:#6B6B5E;font-size:9px;text-transform:uppercase;letter-spacing:.16em;margin-bottom:6px">${k.l}</div>
-          <div style="font-family:'Playfair Display',serif;font-size:24px;font-weight:700;color:#F5F0E8">${k.v}</div>
+          <div style="font-family:'Space Mono',monospace;color:${B.fog};font-size:9px;text-transform:uppercase;letter-spacing:.16em;margin-bottom:6px">${k.l}</div>
+          <div style="font-family:'Playfair Display',serif;font-size:24px;font-weight:700;color:${B.warm}">${k.v}</div>
         </div>`).join("")}
     </div>
-    <div style="position:absolute;bottom:0;left:0;right:0;height:1px;background:linear-gradient(90deg,#C9A84C,transparent);opacity:.2;"></div>
+    <div style="position:absolute;bottom:0;left:0;right:0;height:1px;background:linear-gradient(90deg,${B.gold},transparent);opacity:.2;"></div>
   </div>
 
   <!-- ── GLOBAL REFS ── -->
@@ -507,28 +604,28 @@ function render(){
       ${refInput("Revenue Goal",state.revGoal,"revGoal","$","",120)}
       ${refInput("Revenue Actuals",state.revActual,"revActual","$","",120)}
       <div style="display:flex;flex-direction:column;gap:5px">
-        <span style="font-family:'Space Mono',monospace;font-weight:700;font-size:9px;color:#6B6B5E;letter-spacing:.14em;text-transform:uppercase">Total Pipeline Req</span>
-        <div style="font-family:'Space Mono',monospace;font-size:13px;color:#C9A84C;padding:5px 10px;background:rgba(201,168,76,0.1);border:1px solid rgba(201,168,76,0.25);min-width:110px;text-align:right">${fmtM(dt.totalPipe)}</div>
+        <span style="font-family:'Space Mono',monospace;font-weight:700;font-size:9px;color:${B.fog};letter-spacing:.14em;text-transform:uppercase">Total Pipeline Req</span>
+        <div style="font-family:'Space Mono',monospace;font-size:13px;color:${B.gold};padding:5px 10px;background:${B.goldTint};border:1px solid ${B.goldAccentBorder};min-width:110px;text-align:right">${fmtM(dt.totalPipe)}</div>
       </div>
     </div>
-    <div style="border-top:1px solid rgba(245,240,232,0.07);padding-top:16px">
+    <div style="border-top:1px solid ${B.border};padding-top:16px">
       <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px;flex-wrap:wrap">
-        <span style="font-family:'Space Mono',monospace;font-size:9px;color:#6B6B5E;letter-spacing:.14em;text-transform:uppercase">Pipeline Goal by Quarter</span>
-        <span style="font-family:'Space Mono',monospace;font-size:9px;color:${locked?"#C9A84C":"#1D9E75"};background:${locked?"rgba(201,168,76,0.1)":"rgba(29,158,117,0.1)"};padding:2px 10px;letter-spacing:.1em">${locked?"locked":"unlocked"}</span>
+        <span style="font-family:'Space Mono',monospace;font-size:9px;color:${B.fog};letter-spacing:.14em;text-transform:uppercase">Pipeline Goal by Quarter</span>
+        <span style="font-family:'Space Mono',monospace;font-size:9px;color:${locked?B.gold:B.green};background:${locked?B.goldTint:B.greenBg};padding:2px 10px;letter-spacing:.1em">${locked?"locked":"unlocked"}</span>
       </div>
       <div style="display:flex;gap:16px;flex-wrap:wrap;align-items:flex-end" class="mob-qgoals">
         ${QUARTERS.map((q,i)=>{
           const qv=CHANNELS.reduce((s,ch)=>s+g.goalsDollar[ch][i],0);
           const opps=sumCol(g.goals,i);
           return`<div style="display:flex;flex-direction:column;gap:4px">
-            <span style="font-family:'Space Mono',monospace;color:#6B6B5E;font-size:9px;letter-spacing:.1em">${q}</span>
-            <div style="font-family:'Space Mono',monospace;font-size:13px;color:${locked?"#C9A84C":"#1D9E75"};padding:5px 12px;background:${locked?"rgba(201,168,76,0.1)":"rgba(29,158,117,0.1)"};border:1px solid ${locked?"rgba(201,168,76,0.3)":"rgba(29,158,117,0.3)"};min-width:100px;text-align:right">${fmtM(qv)}</div>
-            <span style="font-family:'Space Mono',monospace;color:#6B6B5E;font-size:9px">${fmtN(opps)} opps</span>
+            <span style="font-family:'Space Mono',monospace;color:${B.fog};font-size:9px;letter-spacing:.1em">${q}</span>
+            <div style="font-family:'Space Mono',monospace;font-size:13px;color:${locked?B.gold:B.green};padding:5px 12px;background:${locked?B.goldTint:B.greenBg};border:1px solid ${locked?B.goldDim:"rgba(29,158,117,0.3)"};min-width:100px;text-align:right">${fmtM(qv)}</div>
+            <span style="font-family:'Space Mono',monospace;color:${B.fog};font-size:9px">${fmtN(opps)} opps</span>
           </div>`;
         }).join("")}
         <div style="display:flex;flex-direction:column;justify-content:flex-end;padding-bottom:2px">
-          <span style="font-family:'Space Mono',monospace;color:${locked?"#C9A84C":"#1D9E75"};font-size:11px">Total: ${fmtM(dt.totalGoalPipe)}</span>
-          <span style="font-family:'Space Mono',monospace;color:#6B6B5E;font-size:9px">${fmtN(Math.round(dt.totalGoalPipe/state.asp))} opps</span>
+          <span style="font-family:'Space Mono',monospace;color:${locked?B.gold:B.green};font-size:11px">Total: ${fmtM(dt.totalGoalPipe)}</span>
+          <span style="font-family:'Space Mono',monospace;color:${B.fog};font-size:9px">${fmtN(Math.round(dt.totalGoalPipe/state.asp))} opps</span>
         </div>
       </div>
     </div>
@@ -546,11 +643,11 @@ function render(){
       </tr></thead>
       <tbody>
         ${summaryRows.map((r,i)=>`<tr style="background:${rowBg(i)}">
-          <td style="padding:9px 10px;color:#F5F0E8;font-weight:700;text-align:left;font-family:'Source Serif 4',serif;font-size:13px">${r.label}</td>
+          <td style="padding:9px 10px;color:${B.warm};font-weight:700;text-align:left;font-family:'Source Serif 4',serif;font-size:13px">${r.label}</td>
           <td style="padding:9px 10px;text-align:center;color:${GoalC};font-weight:700;font-family:'Space Mono',monospace;font-size:11px">${r.goal}</td>
           <td style="padding:9px 10px;text-align:center;color:${ActC};font-weight:700;font-family:'Space Mono',monospace;font-size:11px">${r.actual}</td>
           <td style="padding:9px 10px;text-align:center">${pctBadge(r.pA,r.pG)}</td>
-          <td style="padding:9px 10px;color:#6B6B5E;font-family:'Space Mono',monospace;font-size:9px;letter-spacing:.06em">${r.note||"—"}</td>
+          <td style="padding:9px 10px;color:${B.fog};font-family:'Space Mono',monospace;font-size:9px;letter-spacing:.06em">${r.note||"—"}</td>
         </tr>`).join("")}
       </tbody>
     </table></div>
@@ -561,41 +658,42 @@ function render(){
     ${kpis.map(k=>{
       const pc=pctColor(k.aP,k.gP),pb=pctBg(k.aP,k.gP);
       const prog=Math.min(100,k.gP>0?(k.aP/k.gP)*100:0);
-      return`<div style="background:#1E1E18;border:1px solid ${locked?"rgba(201,168,76,0.3)":"rgba(245,240,232,0.07)"};border-left:2px solid #C9A84C;padding:16px 18px;position:relative;">
-        <div style="position:absolute;top:5px;right:5px;width:8px;height:8px;border-top:1px solid rgba(201,168,76,0.3);border-right:1px solid rgba(201,168,76,0.3);"></div>
+      return`<div style="background:${B.card};border:1px solid ${locked?B.goldDim:B.border};border-left:2px solid ${B.gold};padding:16px 18px;position:relative;">
+        <div style="position:absolute;top:5px;right:5px;width:8px;height:8px;border-top:1px solid ${B.goldDim};border-right:1px solid ${B.goldDim};"></div>
         <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px">
-          <div style="font-family:'Space Mono',monospace;color:#C9A84C;font-weight:700;font-size:9px;letter-spacing:.18em">${k.q}</div>
-          ${lockSVG(locked?"#C9A84C":"#1D9E75",!locked)}
+          <div style="font-family:'Space Mono',monospace;color:${B.gold};font-weight:700;font-size:9px;letter-spacing:.18em">${k.q}</div>
+          ${lockSVG(locked?"#6B8F52":"#1D9E75",!locked)}
         </div>
         <div style="display:flex;justify-content:space-between;margin-bottom:4px">
-          <span style="color:#6B6B5E;font-size:11px;font-family:'Source Serif 4',serif;font-style:italic">Opps</span>
-          <span style="font-family:'Space Mono',monospace;font-size:11px"><span style="color:${ActC};font-weight:700">${fmtN(k.aO)}</span><span style="color:#6B6B5E"> / </span><span style="color:${GoalC};font-weight:700">${fmtN(k.gO)}</span></span>
+          <span style="color:${B.fog};font-size:11px;font-family:'Source Serif 4',serif;font-style:italic">Opps</span>
+          <span style="font-family:'Space Mono',monospace;font-size:11px"><span style="color:${ActC};font-weight:700">${fmtN(k.aO)}</span><span style="color:${B.fog}"> / </span><span style="color:${GoalC};font-weight:700">${fmtN(k.gO)}</span></span>
         </div>
         <div style="display:flex;justify-content:space-between;margin-bottom:10px">
-          <span style="color:#6B6B5E;font-size:11px;font-family:'Source Serif 4',serif;font-style:italic">Pipeline</span>
+          <span style="color:${B.fog};font-size:11px;font-family:'Source Serif 4',serif;font-style:italic">Pipeline</span>
           <span style="font-family:'Space Mono',monospace;font-size:10px;font-weight:700;color:${pc};background:${pb};padding:1px 8px">${fmtPct(k.aP,k.gP)}</span>
         </div>
-        <div style="height:2px;background:rgba(245,240,232,0.07);margin-bottom:10px">
+        <div style="height:2px;background:${B.border};margin-bottom:10px">
           <div style="height:2px;width:${prog}%;background:${pc}"></div>
         </div>
         <div style="display:flex;justify-content:space-between">
           <span style="font-family:'Space Mono',monospace;color:${ActC};font-size:10px;font-weight:700">${fmtM(k.aP)}</span>
-          <span style="font-family:'Space Mono',monospace;color:#6B6B5E;font-size:9px">Goal ${fmtM(k.gP)}</span>
+          <span style="font-family:'Space Mono',monospace;color:${B.fog};font-size:9px">Goal ${fmtM(k.gP)}</span>
         </div>
       </div>`;
     }).join("")}
   </div>
 
   <!-- ── TABS ── -->
-  <div style="display:flex;gap:2px;margin-bottom:16px;background:#1E1E18;padding:3px;width:fit-content;border:1px solid rgba(245,240,232,0.07)" class="mob-tab-bar">
-    ${[["opps","# Opportunities"],["dollars","$ Pipeline"],["log","Change Log"+(state.changeLog.length?" ("+state.changeLog.length+")":"")]].map(([k,l])=>`<button data-tab="${k}" style="padding:7px 20px;font-weight:700;font-size:9px;letter-spacing:.12em;text-transform:uppercase;background:${state.tab===k?"#C9A84C":"transparent"};color:${state.tab===k?"#141410":"#6B6B5E"}">${l}</button>`).join("")}
+  <div style="display:flex;gap:2px;margin-bottom:16px;background:${B.card};padding:3px;width:fit-content;border:1px solid ${B.border}" class="mob-tab-bar no-print">
+    ${[["opps","# Opportunities"],["dollars","$ Pipeline"],["log","Change Log"+(state.changeLog.length?" ("+state.changeLog.length+")":"")]].map(([k,l])=>`<button data-tab="${k}" style="padding:7px 20px;font-weight:700;font-size:9px;letter-spacing:.12em;text-transform:uppercase;background:${state.tab===k?B.gold:"transparent"};color:${state.tab===k?B.void:B.fog}">${l}</button>`).join("")}
   </div>`;
 
-  const tableHint=locked
-    ?`<div style="font-family:'Space Mono',monospace;font-size:9px;color:#C9A84C;margin-bottom:10px;display:flex;align-items:center;gap:6px;letter-spacing:.1em">${lockSVG("#C9A84C")} Goals locked — click any gold cell to edit</div>`
-    :`<div style="font-family:'Space Mono',monospace;font-size:9px;color:#1D9E75;margin-bottom:10px;display:flex;align-items:center;gap:6px;letter-spacing:.1em">${lockSVG("#1D9E75",true)} Goals unlocked — click any gold cell to update, changes are auto-logged</div>`;
+  const tableHint=state.printing?"":locked
+    ?`<div class="no-print" style="font-family:'Space Mono',monospace;font-size:9px;color:${B.gold};margin-bottom:10px;display:flex;align-items:center;gap:6px;letter-spacing:.1em">${lockSVG(B.gold)} Goals locked — click any gold cell to edit</div>`
+    :`<div class="no-print" style="font-family:'Space Mono',monospace;font-size:9px;color:${B.green};margin-bottom:10px;display:flex;align-items:center;gap:6px;letter-spacing:.1em">${lockSVG(B.green,true)} Goals unlocked — click any gold cell to update, changes are auto-logged</div>`;
 
-  if(state.tab==="opps"){
+  if(state.printing||state.tab==="opps"){
+    if(state.printing)html+=`<div style="font-family:'Playfair Display',serif;font-size:18px;font-weight:700;color:${B.warm};margin:20px 0 12px;padding-bottom:8px;border-bottom:1px solid ${B.goldDim}">Opportunities by Channel</div>`;
     html+=tableHint+`<div style="overflow-x:auto;margin-bottom:8px"><table>
       <thead><tr>
         <th style="text-align:left">Channel</th>
@@ -604,28 +702,30 @@ function render(){
       </tr></thead>
       <tbody>
         ${CHANNELS.map((ch,i)=>`<tr style="background:${rowBg(i)}">
-          <td style="padding:7px 10px;color:#F5F0E8;font-weight:700;font-size:11px;border-right:1px solid rgba(245,240,232,0.07);text-align:left;font-family:'Source Serif 4',serif">${ch}</td>
+          <td style="padding:7px 10px;color:${B.warm};font-weight:700;font-size:11px;border-right:1px solid ${B.border};text-align:left;font-family:'Source Serif 4',serif">${ch}</td>
           ${QUARTERS.map((_,qi)=>`${goalCell(g.goals[ch][qi],ch,qi,false)}${actualCell(state.actuals[ch][qi],ch,qi,false)}<td style="padding:5px 6px">${pctBadge(state.actuals[ch][qi],g.goals[ch][qi])}</td>`).join("")}
-          <td style="padding:6px 8px;color:${GoalC};font-weight:700;font-family:'Space Mono',monospace;font-size:10px;background:rgba(201,168,76,0.06)">${fmtN(sumRow(g.goals,ch))}</td>
+          <td style="padding:6px 8px;color:${GoalC};font-weight:700;font-family:'Space Mono',monospace;font-size:10px;background:${B.goldSub}">${fmtN(sumRow(g.goals,ch))}</td>
           <td style="padding:6px 8px;color:${ActC};font-weight:700;font-family:'Space Mono',monospace;font-size:10px">${fmtN(sumRow(state.actuals,ch))}</td>
           <td style="padding:5px 6px">${pctBadge(sumRow(state.actuals,ch),sumRow(g.goals,ch))}</td>
         </tr>`).join("")}
-        <tr style="border-top:1px solid rgba(201,168,76,0.25)">
-          <td style="padding:8px 10px;color:#F5F0E8;font-weight:700;font-size:11px;text-align:left;font-family:'Space Mono',monospace;letter-spacing:.06em">Total Opps</td>
-          ${QUARTERS.map((_,qi)=>{const gv=sumCol(g.goals,qi),av=sumCol(state.actuals,qi);return`<td style="padding:6px 8px;color:${GoalC};font-weight:700;font-family:'Space Mono',monospace;font-size:10px;background:rgba(201,168,76,0.06)">${fmtN(gv)}</td><td style="padding:6px 8px;color:${ActC};font-weight:700;font-family:'Space Mono',monospace;font-size:10px">${fmtN(av)}</td><td style="padding:5px 6px">${pctBadge(av,gv)}</td>`}).join("")}
-          <td style="padding:6px 8px;color:${GoalC};font-weight:700;font-family:'Space Mono',monospace;font-size:10px;background:rgba(201,168,76,0.06)">${fmtN(dt.totalGoalOpps)}</td>
+        <tr style="border-top:1px solid ${B.goldAccentBorder}">
+          <td style="padding:8px 10px;color:${B.warm};font-weight:700;font-size:11px;text-align:left;font-family:'Space Mono',monospace;letter-spacing:.06em">Total Opps</td>
+          ${QUARTERS.map((_,qi)=>{const gv=sumCol(g.goals,qi),av=sumCol(state.actuals,qi);return`<td style="padding:6px 8px;color:${GoalC};font-weight:700;font-family:'Space Mono',monospace;font-size:10px;background:rgba(107,143,82,0.06)">${fmtN(gv)}</td><td style="padding:6px 8px;color:${ActC};font-weight:700;font-family:'Space Mono',monospace;font-size:10px">${fmtN(av)}</td><td style="padding:5px 6px">${pctBadge(av,gv)}</td>`}).join("")}
+          <td style="padding:6px 8px;color:${GoalC};font-weight:700;font-family:'Space Mono',monospace;font-size:10px;background:rgba(107,143,82,0.06)">${fmtN(dt.totalGoalOpps)}</td>
           <td style="padding:6px 8px;color:${ActC};font-weight:700;font-family:'Space Mono',monospace;font-size:10px">${fmtN(dt.totalActOpps)}</td>
           <td style="padding:5px 6px">${pctBadge(dt.totalActOpps,dt.totalGoalOpps)}</td>
         </tr>
         <tr>
-          <td style="padding:5px 10px;color:#6B6B5E;font-family:'Space Mono',monospace;font-size:9px;text-align:left;letter-spacing:.08em">Avg Opps / Week</td>
-          ${QUARTERS.map((_,qi)=>`<td style="padding:5px 8px;color:#6B6B5E;font-family:'Space Mono',monospace;font-size:9px">${(sumCol(g.goals,qi)/WEEKS).toFixed(1)}</td><td></td><td></td>`).join("")}
+          <td style="padding:5px 10px;color:${B.fog};font-family:'Space Mono',monospace;font-size:9px;text-align:left;letter-spacing:.08em">Avg Opps / Week</td>
+          ${QUARTERS.map((_,qi)=>`<td style="padding:5px 8px;color:#8FAF6A;font-family:'Space Mono',monospace;font-size:9px">${(sumCol(g.goals,qi)/WEEKS).toFixed(1)}</td><td></td><td></td>`).join("")}
           <td></td><td></td><td></td>
         </tr>
       </tbody>
     </table></div>`;
 
-  } else if(state.tab==="dollars"){
+  }
+  if(state.printing||state.tab==="dollars"){
+    if(state.printing)html+=`<div style="font-family:'Playfair Display',serif;font-size:18px;font-weight:700;color:${B.warm};margin:20px 0 12px;padding-bottom:8px;border-bottom:1px solid ${B.goldDim}">Pipeline by Channel (\$)</div>`;
     html+=tableHint+`<div style="overflow-x:auto;margin-bottom:8px"><table>
       <thead><tr>
         <th style="text-align:left">Channel</th>
@@ -634,56 +734,58 @@ function render(){
       </tr></thead>
       <tbody>
         ${CHANNELS.map((ch,i)=>`<tr style="background:${rowBg(i)}">
-          <td style="padding:7px 10px;color:#F5F0E8;font-weight:700;font-size:11px;border-right:1px solid rgba(245,240,232,0.07);text-align:left;font-family:'Source Serif 4',serif">${ch}</td>
+          <td style="padding:7px 10px;color:${B.warm};font-weight:700;font-size:11px;border-right:1px solid ${B.border};text-align:left;font-family:'Source Serif 4',serif">${ch}</td>
           ${QUARTERS.map((_,qi)=>`${goalCell(g.goalsDollar[ch][qi],ch,qi,true)}${actualCell(state.actDollar[ch][qi],ch,qi,true)}<td style="padding:5px 6px">${pctBadge(state.actDollar[ch][qi],g.goalsDollar[ch][qi])}</td>`).join("")}
-          <td style="padding:6px 8px;color:${GoalC};font-weight:700;font-family:'Space Mono',monospace;font-size:10px;background:rgba(201,168,76,0.06)">${fmt$(g.goalsDollar[ch].reduce((a,b)=>a+b,0))}</td>
+          <td style="padding:6px 8px;color:${GoalC};font-weight:700;font-family:'Space Mono',monospace;font-size:10px;background:rgba(107,143,82,0.06)">${fmt$(g.goalsDollar[ch].reduce((a,b)=>a+b,0))}</td>
           <td style="padding:6px 8px;color:${ActC};font-weight:700;font-family:'Space Mono',monospace;font-size:10px">${fmt$(state.actDollar[ch].reduce((a,b)=>a+b,0))}</td>
           <td style="padding:5px 6px">${pctBadge(state.actDollar[ch].reduce((a,b)=>a+b,0),g.goalsDollar[ch].reduce((a,b)=>a+b,0))}</td>
         </tr>`).join("")}
-        <tr style="border-top:1px solid rgba(201,168,76,0.25)">
-          <td style="padding:8px 10px;color:#F5F0E8;font-weight:700;font-size:11px;text-align:left;font-family:'Space Mono',monospace;letter-spacing:.06em">Total Pipeline</td>
-          ${QUARTERS.map((_,qi)=>{const gv=CHANNELS.reduce((s,ch)=>s+g.goalsDollar[ch][qi],0),av=CHANNELS.reduce((s,ch)=>s+state.actDollar[ch][qi],0);return`<td style="padding:6px 8px;color:${GoalC};font-weight:700;font-family:'Space Mono',monospace;font-size:10px;background:rgba(201,168,76,0.06)">${fmt$(gv)}</td><td style="padding:6px 8px;color:${ActC};font-weight:700;font-family:'Space Mono',monospace;font-size:10px">${fmt$(av)}</td><td style="padding:5px 6px">${pctBadge(av,gv)}</td>`}).join("")}
-          <td style="padding:6px 8px;color:${GoalC};font-weight:700;font-family:'Space Mono',monospace;font-size:10px;background:rgba(201,168,76,0.06)">${fmt$(dt.totalGoalPipe)}</td>
+        <tr style="border-top:1px solid ${B.goldAccentBorder}">
+          <td style="padding:8px 10px;color:#E8EDE4;font-weight:700;font-size:11px;text-align:left;font-family:'Space Mono',monospace;letter-spacing:.06em">Total Pipeline</td>
+          ${QUARTERS.map((_,qi)=>{const gv=CHANNELS.reduce((s,ch)=>s+g.goalsDollar[ch][qi],0),av=CHANNELS.reduce((s,ch)=>s+state.actDollar[ch][qi],0);return`<td style="padding:6px 8px;color:${GoalC};font-weight:700;font-family:'Space Mono',monospace;font-size:10px;background:rgba(107,143,82,0.06)">${fmt$(gv)}</td><td style="padding:6px 8px;color:${ActC};font-weight:700;font-family:'Space Mono',monospace;font-size:10px">${fmt$(av)}</td><td style="padding:5px 6px">${pctBadge(av,gv)}</td>`}).join("")}
+          <td style="padding:6px 8px;color:${GoalC};font-weight:700;font-family:'Space Mono',monospace;font-size:10px;background:rgba(107,143,82,0.06)">${fmt$(dt.totalGoalPipe)}</td>
           <td style="padding:6px 8px;color:${ActC};font-weight:700;font-family:'Space Mono',monospace;font-size:10px">${fmt$(dt.totalActPipe)}</td>
           <td style="padding:5px 6px">${pctBadge(dt.totalActPipe,dt.totalGoalPipe)}</td>
         </tr>
         <tr>
-          <td style="padding:5px 10px;color:#6B6B5E;font-family:'Space Mono',monospace;font-size:9px;text-align:left;letter-spacing:.08em">Avg $ / Week Req</td>
-          ${QUARTERS.map((_,qi)=>`<td style="padding:5px 8px;color:#6B6B5E;font-family:'Space Mono',monospace;font-size:9px">${fmt$(CHANNELS.reduce((s,ch)=>s+g.goalsDollar[ch][qi],0)/WEEKS)}</td><td></td><td></td>`).join("")}
+          <td style="padding:5px 10px;color:${B.fog};font-family:'Space Mono',monospace;font-size:9px;text-align:left;letter-spacing:.08em">Avg $ / Week Req</td>
+          ${QUARTERS.map((_,qi)=>`<td style="padding:5px 8px;color:#8FAF6A;font-family:'Space Mono',monospace;font-size:9px">${fmt$(CHANNELS.reduce((s,ch)=>s+g.goalsDollar[ch][qi],0)/WEEKS)}</td><td></td><td></td>`).join("")}
           <td></td><td></td><td></td>
         </tr>
       </tbody>
     </table></div>`;
 
-  } else {
+  }
+  if(state.printing||state.tab==="log"){
+    if(state.printing)html+=`<div style="font-family:'Playfair Display',serif;font-size:18px;font-weight:700;color:${B.warm};margin:20px 0 12px;padding-bottom:8px;border-bottom:1px solid ${B.goldDim}">Change Log</div>`;
     // ── Change Log ──
     html+=`<div class="card" style="margin-bottom:8px">
       <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px">
         <span class="sec-label" style="margin-bottom:0">Goal Change Log</span>
-        <span style="font-family:'Space Mono',monospace;font-size:9px;color:#6B6B5E;letter-spacing:.1em">${state.changeLog.length} ${state.changeLog.length===1?"entry":"entries"} · shared</span>
+        <span style="font-family:'Space Mono',monospace;font-size:9px;color:${B.fog};letter-spacing:.1em">${state.changeLog.length} ${state.changeLog.length===1?"entry":"entries"} · shared</span>
       </div>
       ${state.changeLog.length===0
-        ?`<div style="text-align:center;padding:40px 0;font-family:'Source Serif 4',serif;font-style:italic;font-size:14px;color:#6B6B5E">No changes logged yet.<br><span style="font-size:12px">Every goal edit and lock/unlock requires a note and is recorded here.</span></div>`
+        ?`<div style="text-align:center;padding:40px 0;font-family:'Source Serif 4',serif;font-style:italic;font-size:14px;color:${B.fog}">No changes logged yet.<br><span style="font-size:12px">Every goal edit and lock/unlock requires a note and is recorded here.</span></div>`
         :`<div style="display:flex;flex-direction:column;gap:10px">
           ${state.changeLog.map(e=>{
             const typeColors={
-              lock:{color:"#C9A84C",label:"Locked"},
-              unlock:{color:"#1D9E75",label:"Unlocked"},
-              goal_edit:{color:e.dir==="increased"?"#1D9E75":e.dir==="decreased"?"#C0392B":"#6B6B5E",label:e.dir==="increased"?"↑ Increased":e.dir==="decreased"?"↓ Decreased":"~ Updated"}
+              lock:{color:B.gold,label:"Locked"},
+              unlock:{color:B.green,label:"Unlocked"},
+              goal_edit:{color:e.dir==="increased"?B.green:e.dir==="decreased"?B.red:B.fog,label:e.dir==="increased"?"↑ Increased":e.dir==="decreased"?"↓ Decreased":"~ Updated"}
             };
-            const ts=typeColors[e.type]||{color:"#6B6B5E",label:e.type};
+            const ts=typeColors[e.type]||{color:B.fog,label:e.type};
             const noteText=e.note||e.reason||null;
-            return`<div style="background:#141410;border:1px solid rgba(245,240,232,0.07);border-left:2px solid ${ts.color};padding:14px 16px" class="mob-log-entry">
+            return`<div style="background:${B.void};border:1px solid ${B.border};border-left:2px solid ${ts.color};padding:14px 16px" class="mob-log-entry">
               <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:12px;margin-bottom:${noteText?'10px':'0'};flex-wrap:wrap" class="mob-log-header">
                 <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">
                   <span style="font-family:'Space Mono',monospace;font-size:9px;font-weight:700;color:${ts.color};background:${ts.color}18;padding:2px 8px;letter-spacing:.14em;text-transform:uppercase;white-space:nowrap">${ts.label}</span>
-                  <span style="font-family:'Playfair Display',serif;font-size:15px;font-weight:700;color:#F5F0E8">${e.desc}</span>
+                  <span style="font-family:'Playfair Display',serif;font-size:15px;font-weight:700;color:${B.warm}">${e.desc}</span>
                 </div>
-                <span style="font-family:'Space Mono',monospace;font-size:9px;color:#6B6B5E;white-space:nowrap;letter-spacing:.06em;flex-shrink:0">${e.ts}</span>
+                <span style="font-family:'Space Mono',monospace;font-size:9px;color:${B.fog};white-space:nowrap;letter-spacing:.06em;flex-shrink:0">${e.ts}</span>
               </div>
-              ${noteText?`<div style="background:#1E1E18;border:1px solid rgba(245,240,232,0.07);padding:8px 12px;display:flex;gap:8px;align-items:flex-start">
-                <span style="font-family:'Space Mono',monospace;font-size:9px;color:#6B6B5E;text-transform:uppercase;letter-spacing:.12em;white-space:nowrap;padding-top:2px">Note:</span>
-                <span style="font-family:'Source Serif 4',serif;font-style:italic;font-size:13px;color:#F5F0E8;line-height:1.6">${noteText}</span>
+              ${noteText?`<div style="background:${B.card};border:1px solid ${B.border};padding:8px 12px;display:flex;gap:8px;align-items:flex-start">
+                <span style="font-family:'Space Mono',monospace;font-size:9px;color:${B.fog};text-transform:uppercase;letter-spacing:.12em;white-space:nowrap;padding-top:2px">Note:</span>
+                <span style="font-family:'Source Serif 4',serif;font-style:italic;font-size:13px;color:${B.warm};line-height:1.6">${noteText}</span>
               </div>`:""}
             </div>`;
           }).join("")}
@@ -692,7 +794,7 @@ function render(){
     </div>`;
   }
 
-  html+=`<div style="margin-top:16px;font-family:'Space Mono',monospace;color:#6B6B5E;font-size:9px;letter-spacing:.1em;border-top:1px solid rgba(245,240,232,0.07);padding-top:12px">
+  html+=`<div style="margin-top:16px;font-family:'Space Mono',monospace;color:${B.fog};font-size:9px;letter-spacing:.1em;border-top:1px solid ${B.border};padding-top:12px">
     <span style="color:${GoalC}">GOLD</span> = goals (reason always required) · <span style="color:${ActC}">GREEN</span> = actuals (free edit, auto-save) · Data shared across all viewers
   </div>`;
 
